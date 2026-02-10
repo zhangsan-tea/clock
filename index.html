@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桌面时钟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0c0e1a 0%, #1a1c2e 50%, #0c0e1a 100%);
+      font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .clock-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .clock {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #2a2d42, #1a1c2e 60%, #0f1018);
+      box-shadow:
+        0 0 60px rgba(100, 120, 255, 0.15),
+        inset 0 0 60px rgba(0, 0, 0, 0.5),
+        0 0 0 12px #1e2035,
+        0 0 0 16px #2a2d50,
+        0 0 0 20px #1a1c2e;
+    }
+
+    .clock-face {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 370px;
+      height: 370px;
+      border-radius: 50%;
+    }
+
+    /* 刻度 */
+    .tick {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 100%;
+      transform-origin: center center;
+    }
+
+    .tick::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 14px;
+      background: rgba(150, 160, 200, 0.4);
+      border-radius: 1px;
+    }
+
+    .tick.major::before {
+      width: 3px;
+      height: 22px;
+      background: rgba(200, 210, 255, 0.8);
+      box-shadow: 0 0 6px rgba(150, 170, 255, 0.3);
+    }
+
+    /* 数字 */
+    .number {
+      position: absolute;
+      font-size: 28px;
+      font-weight: 600;
+      color: rgba(200, 210, 255, 0.85);
+      text-shadow: 0 0 10px rgba(150, 170, 255, 0.3);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .number-12 { top: 22px; left: 50%; transform: translateX(-50%); }
+    .number-1  { top: 42px; right: 62px; }
+    .number-2  { top: 90px; right: 30px; }
+    .number-3  { top: 50%; right: 16px; transform: translateY(-50%); }
+    .number-4  { bottom: 90px; right: 30px; }
+    .number-5  { bottom: 42px; right: 62px; }
+    .number-6  { bottom: 22px; left: 50%; transform: translateX(-50%); }
+    .number-7  { bottom: 42px; left: 62px; }
+    .number-8  { bottom: 90px; left: 30px; }
+    .number-9  { top: 50%; left: 16px; transform: translateY(-50%); }
+    .number-10 { top: 90px; left: 30px; }
+    .number-11 { top: 42px; left: 62px; }
+
+    /* 中心点 */
+    .center-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #fff, #8090cc);
+      border-radius: 50%;
+      z-index: 20;
+      box-shadow: 0 0 10px rgba(150, 170, 255, 0.5);
+    }
+
+    .center-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: #1a1c2e;
+      border-radius: 50%;
+    }
+
+    /* 指针 */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      z-index: 10;
+      border-radius: 4px;
+    }
+
+    .hour-hand {
+      width: 6px;
+      height: 100px;
+      margin-left: -3px;
+      background: linear-gradient(to top, #c8d0ff, #e8ecff);
+      box-shadow: 0 0 12px rgba(200, 210, 255, 0.4);
+      border-radius: 3px;
+      z-index: 12;
+    }
+
+    .minute-hand {
+      width: 4px;
+      height: 135px;
+      margin-left: -2px;
+      background: linear-gradient(to top, #a0b0ff, #d0d8ff);
+      box-shadow: 0 0 10px rgba(160, 180, 255, 0.3);
+      border-radius: 2px;
+      z-index: 13;
+    }
+
+    .second-hand {
+      width: 2px;
+      height: 150px;
+      margin-left: -1px;
+      background: linear-gradient(to top, #ff4060, #ff6080);
+      box-shadow: 0 0 8px rgba(255, 64, 96, 0.5);
+      z-index: 14;
+      transition: transform 0.2s cubic-bezier(0.4, 2.08, 0.55, 0.44);
+    }
+
+    .second-hand::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 30px;
+      background: rgba(255, 64, 96, 0.6);
+      border-radius: 1px;
+    }
+
+    /* 数字时间显示 */
+    .digital-time {
+      font-size: 22px;
+      font-weight: 300;
+      color: rgba(200, 210, 255, 0.7);
+      letter-spacing: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .date-display {
+      font-size: 14px;
+      color: rgba(150, 160, 200, 0.5);
+      letter-spacing: 2px;
+    }
+
+    /* 报时提示 */
+    .chime-indicator {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: rgba(30, 32, 53, 0.9);
+      border: 1px solid rgba(100, 120, 255, 0.2);
+      border-radius: 30px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .chime-indicator.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .chime-indicator .bell-icon {
+      font-size: 18px;
+      animation: bellSwing 0.5s ease-in-out infinite alternate;
+    }
+
+    .chime-indicator .chime-text {
+      color: rgba(200, 210, 255, 0.8);
+      font-size: 14px;
+    }
+
+    @keyframes bellSwing {
+      from { transform: rotate(-10deg); }
+      to { transform: rotate(10deg); }
+    }
+
+    /* 状态指示 */
+    .status-bar {
+      position: fixed;
+      bottom: 30px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(150, 160, 200, 0.5);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+
+    .status-dot.muted {
+      background: #f59e0b;
+    }
+
+    .status-dot.sleeping {
+      background: #ef4444;
+    }
+
+    /* 背景装饰 */
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(80, 100, 255, 0.05), transparent 70%);
+      pointer-events: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="chime-indicator" id="chimeIndicator">
+    <span class="bell-icon">🔔</span>
+    <span class="chime-text" id="chimeText"></span>
+  </div>
+
+  <div class="clock-container">
+    <div class="clock">
+      <div class="clock-face">
+        <!-- 刻度 -->
+        <!-- 数字 -->
+        <div class="number number-12">12</div>
+        <div class="number number-1">1</div>
+        <div class="number number-2">2</div>
+        <div class="number number-3">3</div>
+        <div class="number number-4">4</div>
+        <div class="number number-5">5</div>
+        <div class="number number-6">6</div>
+        <div class="number number-7">7</div>
+        <div class="number number-8">8</div>
+        <div class="number number-9">9</div>
+        <div class="number number-10">10</div>
+        <div class="number number-11">11</div>
+
+        <!-- 指针 -->
+        <div class="hand hour-hand" id="hourHand"></div>
+        <div class="hand minute-hand" id="minuteHand"></div>
+        <div class="hand second-hand" id="secondHand"></div>
+        <div class="center-dot"></div>
+      </div>
+    </div>
+
+    <div class="digital-time" id="digitalTime">00:00:00</div>
+    <div class="date-display" id="dateDisplay"></div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">正常</span>
+    </div>
+    <div class="status-item">
+      <span id="chimeStatus">报时：开启 (8:00 - 22:00)</span>
+    </div>
+    <button id="testChimeBtn" style="
+      margin-left: 16px;
+      padding: 6px 18px;
+      background: rgba(100, 120, 255, 0.15);
+      border: 1px solid rgba(100, 120, 255, 0.3);
+      border-radius: 20px;
+      color: rgba(200, 210, 255, 0.8);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    " onmouseover="this.style.background='rgba(100,120,255,0.3)'" onmouseout="this.style.background='rgba(100,120,255,0.15)'">
+      🔔 测试报时（3声）
+    </button>
+  </div>
+
+  <script>
+    // ==================== 刻度生成 ====================
+    const clockFace = document.querySelector('.clock-face');
+    for (let i = 0; i < 60; i++) {
+      const tick = document.createElement('div');
+      tick.classList.add('tick');
+      if (i % 5 === 0) tick.classList.add('major');
+      tick.style.transform = `rotate(${i * 6}deg)`;
+      clockFace.appendChild(tick);
+    }
+
+    // ==================== 时钟走动 ====================
+    const hourHand = document.getElementById('hourHand');
+    const minuteHand = document.getElementById('minuteHand');
+    const secondHand = document.getElementById('secondHand');
+    const digitalTime = document.getElementById('digitalTime');
+    const dateDisplay = document.getElementById('dateDisplay');
+
+    let prevSecond = -1;
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+
+      const secondDeg = seconds * 6;
+      const minuteDeg = (minutes + seconds / 60) * 6;
+      const hourDeg = ((hours % 12) + minutes / 60) * 30;
+
+      // 处理秒针从 59 秒跳回 0 秒时，避免反转动画
+      if (prevSecond === 59 && seconds === 0) {
+        secondHand.style.transition = 'none';
+        secondHand.style.transform = 'rotate(360deg)';
+        secondHand.offsetHeight; // 强制重绘
+        secondHand.style.transform = 'rotate(0deg)';
+        setTimeout(() => {
+          secondHand.style.transition = 'transform 0.2s cubic-bezier(0.4, 2.08, 0.55, 0.44)';
+        }, 20);
+      } else {
+        secondHand.style.transform = `rotate(${secondDeg}deg)`;
+      }
+      prevSecond = seconds;
+
+      minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
+      hourHand.style.transform = `rotate(${hourDeg}deg)`;
+
+      // 数字时间
+      digitalTime.textContent =
+        String(hours).padStart(2, '0') + ':' +
+        String(minutes).padStart(2, '0') + ':' +
+        String(seconds).padStart(2, '0');
+
+      // 日期
+      const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+      dateDisplay.textContent =
+        `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
+
+      // 检查整点报时
+      checkChime(hours, minutes, seconds);
+
+      // 动态计算到下一秒的精确延迟，确保每次都对齐秒边界
+      const msToNextSecond = 1000 - now.getMilliseconds();
+      setTimeout(updateClock, msToNextSecond);
+    }
+
+    // 启动：对齐到下一秒的边界开始
+    const msToStart = 1000 - new Date().getMilliseconds();
+    setTimeout(updateClock, msToStart);
+
+    // ==================== 整点报时 ====================
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let lastChimeHour = -1;
+    let isChiming = false;
+
+    // 系统状态检测
+    // 通过 Page Visibility API 检测页面是否隐藏（模拟睡眠状态）
+    // 通过 Notification API 检测是否授权通知（模拟勿扰状态）
+    function getSystemStatus() {
+      const status = {
+        isSleeping: false,
+        isDoNotDisturb: false,
+        label: '正常',
+        dotClass: ''
+      };
+
+      // 检测页面是否隐藏（系统睡眠/屏幕关闭）
+      if (document.hidden || document.visibilityState === 'hidden') {
+        status.isSleeping = true;
+        status.label = '睡眠中';
+        status.dotClass = 'sleeping';
+      }
+
+      // 检测通知权限（denied 视为勿扰模式）
+      if ('Notification' in window && Notification.permission === 'denied') {
+        status.isDoNotDisturb = true;
+        status.label = '勿扰模式';
+        status.dotClass = 'muted';
+      }
+
+      return status;
+    }
+
+    function updateStatusDisplay() {
+      const status = getSystemStatus();
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      const chimeStatusEl = document.getElementById('chimeStatus');
+
+      dot.className = 'status-dot' + (status.dotClass ? ' ' + status.dotClass : '');
+      text.textContent = status.label;
+
+      const now = new Date();
+      const h = now.getHours();
+      if (h >= 8 && h < 22) {
+        if (status.isSleeping || status.isDoNotDisturb) {
+          chimeStatusEl.textContent = '报时：已暂停（' + status.label + '）';
+        } else {
+          chimeStatusEl.textContent = '报时：开启 (8:00 - 22:00)';
+        }
+      } else {
+        chimeStatusEl.textContent = '报时：休息时段 (22:00 - 8:00)';
+      }
+    }
+
+    setInterval(updateStatusDisplay, 1000);
+
+    function canChime(hour) {
+      // 只在 8:00 - 21:59 报时（即 8 点到 22 点之间的整点）
+      if (hour < 8 || hour >= 22) return false;
+
+      const status = getSystemStatus();
+      if (status.isSleeping || status.isDoNotDisturb) return false;
+
+      return true;
+    }
+
+    function checkChime(hours, minutes, seconds) {
+      if (minutes === 0 && seconds === 0 && !isChiming && lastChimeHour !== hours) {
+        if (canChime(hours)) {
+          lastChimeHour = hours;
+          const chimeCount = hours % 12 === 0 ? 12 : hours % 12;
+          playChime(chimeCount, hours);
+        } else {
+          lastChimeHour = hours;
+        }
+      }
+      // 过了整点则重置
+      if (minutes !== 0) {
+        lastChimeHour = -1;
+      }
+    }
+
+    // ==================== 西敏寺钟声 (Westminster Quarters) ====================
+    // 音符频率 (Hz)
+    const NOTE = {
+      B3:  246.94,  // 低音 Si
+      E4:  329.63,  // Mi
+      Fs4: 369.99,  // 升 Fa
+      Gs4: 415.30,  // 升 Sol
+      E3:  164.81,  // 报时大钟 低音 E
+    };
+
+    // 整点前奏旋律：4 组变奏（每组 4 个音）
+    const WESTMINSTER_MELODY = [
+      // 变奏 2: E4, G#4, F#4, B3
+      [NOTE.E4, NOTE.Gs4, NOTE.Fs4, NOTE.B3],
+      // 变奏 3: E4, F#4, G#4, E4
+      [NOTE.E4, NOTE.Fs4, NOTE.Gs4, NOTE.E4],
+      // 变奏 4: G#4, E4, F#4, B3
+      [NOTE.Gs4, NOTE.E4, NOTE.Fs4, NOTE.B3],
+      // 变奏 5: B3, F#4, G#4, E4
+      [NOTE.B3, NOTE.Fs4, NOTE.Gs4, NOTE.E4],
+    ];
+
+    // 创建高音质钟琴音色（模拟管钟/钟琴）
+    function playBellNote(time, frequency, duration, volume) {
+      const vol = volume || 0.25;
+      const dur = duration || 1.8;
+
+      // 基音
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(frequency, time);
+      gain1.gain.setValueAtTime(0, time);
+      gain1.gain.linearRampToValueAtTime(vol, time + 0.008);
+      gain1.gain.exponentialRampToValueAtTime(vol * 0.4, time + dur * 0.3);
+      gain1.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start(time);
+      osc1.stop(time + dur + 0.1);
+
+      // 二次泛音 (2x)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(frequency * 2, time);
+      gain2.gain.setValueAtTime(0, time);
+      gain2.gain.linearRampToValueAtTime(vol * 0.3, time + 0.005);
+      gain2.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.6);
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(time);
+      osc2.stop(time + dur * 0.6 + 0.1);
+
+      // 三次泛音 (3x) — 增加金属质感
+      const osc3 = audioCtx.createOscillator();
+      const gain3 = audioCtx.createGain();
+      osc3.type = 'sine';
+      osc3.frequency.setValueAtTime(frequency * 3, time);
+      gain3.gain.setValueAtTime(0, time);
+      gain3.gain.linearRampToValueAtTime(vol * 0.1, time + 0.003);
+      gain3.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.3);
+      osc3.connect(gain3);
+      gain3.connect(audioCtx.destination);
+      osc3.start(time);
+      osc3.stop(time + dur * 0.3 + 0.1);
+    }
+
+    // 播放大钟敲击（报时用，低沉浑厚）
+    function playHourStrike(time) {
+      const freq = NOTE.E3;
+      const dur = 3.0;
+
+      // 基音（厚重）
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(freq, time);
+      gain1.gain.setValueAtTime(0, time);
+      gain1.gain.linearRampToValueAtTime(0.35, time + 0.015);
+      gain1.gain.exponentialRampToValueAtTime(0.15, time + 0.8);
+      gain1.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start(time);
+      osc1.stop(time + dur + 0.1);
+
+      // 低频泛音
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2, time);
+      gain2.gain.setValueAtTime(0, time);
+      gain2.gain.linearRampToValueAtTime(0.15, time + 0.01);
+      gain2.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.5);
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(time);
+      osc2.stop(time + dur * 0.5 + 0.1);
+
+      // 次低泛音
+      const osc3 = audioCtx.createOscillator();
+      const gain3 = audioCtx.createGain();
+      osc3.type = 'sine';
+      osc3.frequency.setValueAtTime(freq * 3, time);
+      gain3.gain.setValueAtTime(0, time);
+      gain3.gain.linearRampToValueAtTime(0.06, time + 0.005);
+      gain3.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.3);
+      osc3.connect(gain3);
+      gain3.connect(audioCtx.destination);
+      osc3.start(time);
+      osc3.stop(time + dur * 0.3 + 0.1);
+    }
+
+    function playChime(count, hour) {
+      isChiming = true;
+
+      // 显示报时提示
+      const indicator = document.getElementById('chimeIndicator');
+      const chimeText = document.getElementById('chimeText');
+
+      const hourDisplay = hour > 12 ? `下午${hour - 12}` : (hour === 12 ? '中午12' : `上午${hour}`);
+      chimeText.textContent = `${hourDisplay}点 · 西敏寺钟声`;
+      indicator.classList.add('active');
+
+      // 确保 AudioContext 处于 running 状态
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      let t = audioCtx.currentTime + 0.2;
+
+      // ---- 第一部分：西敏寺前奏旋律（4组变奏 × 4音） ----
+      const quarterNoteDur = 0.6;   // 四分音符时长
+      const halfNoteDur = 1.2;      // 二分音符时长（最后一个音）
+      const groupGap = 0.3;         // 组间间隔
+
+      for (let g = 0; g < 4; g++) {
+        const group = WESTMINSTER_MELODY[g];
+        for (let n = 0; n < 4; n++) {
+          const isLast = (n === 3);
+          const noteDur = isLast ? halfNoteDur : quarterNoteDur;
+          playBellNote(t, group[n], isLast ? 2.5 : 1.8, 0.2);
+          t += isLast ? halfNoteDur : quarterNoteDur;
+        }
+        t += groupGap;
+      }
+
+      // ---- 第二部分：间隔后敲大钟 ----
+      t += 1.5; // 旋律结束后稍作停顿
+
+      const strikeInterval = 2.0; // 每下之间间隔
+      for (let i = 0; i < count; i++) {
+        playHourStrike(t + i * strikeInterval);
+      }
+
+      // 报时完成后隐藏提示
+      const melodyDuration = (4 * (3 * quarterNoteDur + halfNoteDur + groupGap) + 1.5);
+      const strikeDuration = count * strikeInterval + 3;
+      const totalDuration = (melodyDuration + strikeDuration) * 1000;
+
+      setTimeout(() => {
+        indicator.classList.remove('active');
+        isChiming = false;
+      }, totalDuration);
+    }
+
+    // 请求通知权限（用于检测勿扰状态）
+    if ('Notification' in window && Notification.permission === 'default') {
+      // 不主动弹出请求，让用户自己决定
+    }
+
+    // 页面可见性变化监听
+    document.addEventListener('visibilitychange', () => {
+      updateStatusDisplay();
+      if (!document.hidden && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    });
+
+    // 点击页面激活音频
+    let audioActivated = false;
+    document.addEventListener('click', () => {
+      if (!audioActivated) {
+        audioCtx.resume().then(() => {
+          audioActivated = true;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.01);
+        });
+      }
+    });
+
+    // 初始状态更新
+    updateStatusDisplay();
+
+    // 测试报时按钮
+    document.getElementById('testChimeBtn').addEventListener('click', () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      audioActivated = true;
+      const now = new Date();
+      const h = now.getHours();
+      const chimeCount = h % 12 === 0 ? 12 : h % 12;
+      playChime(chimeCount, h);
+    });
+  </script>
+</body>
+</html>
