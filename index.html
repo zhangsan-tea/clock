@@ -500,167 +500,83 @@
       }
     }
 
-    // ==================== 西敏寺钟声 (Westminster Quarters) ====================
-    // 音符频率 (Hz)
-    const NOTE = {
-      B3:  246.94,  // 低音 Si
-      E4:  329.63,  // Mi
-      Fs4: 369.99,  // 升 Fa
-      Gs4: 415.30,  // 升 Sol
-      E3:  164.81,  // 报时大钟 低音 E
-    };
+    // ==================== 真实座钟音效 ====================
+    // 音频文件：前部分是过渡旋律，后部分是 3 声敲钟
+    // 总时长约 27.9 秒
+    // 拆分点：前奏(旋律) 约 0 ~ 18秒，敲钟部分约 18 ~ 27.9秒（3声，每声约3.3秒）
 
-    // 整点前奏旋律：4 组变奏（每组 4 个音）
-    const WESTMINSTER_MELODY = [
-      // 变奏 2: E4, G#4, F#4, B3
-      [NOTE.E4, NOTE.Gs4, NOTE.Fs4, NOTE.B3],
-      // 变奏 3: E4, F#4, G#4, E4
-      [NOTE.E4, NOTE.Fs4, NOTE.Gs4, NOTE.E4],
-      // 变奏 4: G#4, E4, F#4, B3
-      [NOTE.Gs4, NOTE.E4, NOTE.Fs4, NOTE.B3],
-      // 变奏 5: B3, F#4, G#4, E4
-      [NOTE.B3, NOTE.Fs4, NOTE.Gs4, NOTE.E4],
-    ];
+    const AUDIO_FILE = '大座钟的声音_爱给网_aigei_com.mp3';
+    let audioBuffer = null;
+    let audioLoaded = false;
 
-    // 创建高音质钟琴音色（模拟管钟/钟琴）
-    function playBellNote(time, frequency, duration, volume) {
-      const vol = volume || 0.25;
-      const dur = duration || 1.8;
+    // 预加载音频文件并解码
+    fetch(AUDIO_FILE)
+      .then(response => response.arrayBuffer())
+      .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+      .then(buffer => {
+        audioBuffer = buffer;
+        audioLoaded = true;
+        console.log('音频加载完成，时长:', buffer.duration.toFixed(2), '秒');
+      })
+      .catch(err => {
+        console.error('音频加载失败:', err);
+      });
 
-      // 基音
-      const osc1 = audioCtx.createOscillator();
-      const gain1 = audioCtx.createGain();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(frequency, time);
-      gain1.gain.setValueAtTime(0, time);
-      gain1.gain.linearRampToValueAtTime(vol, time + 0.008);
-      gain1.gain.exponentialRampToValueAtTime(vol * 0.4, time + dur * 0.3);
-      gain1.gain.exponentialRampToValueAtTime(0.001, time + dur);
-      osc1.connect(gain1);
-      gain1.connect(audioCtx.destination);
-      osc1.start(time);
-      osc1.stop(time + dur + 0.1);
-
-      // 二次泛音 (2x)
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(frequency * 2, time);
-      gain2.gain.setValueAtTime(0, time);
-      gain2.gain.linearRampToValueAtTime(vol * 0.3, time + 0.005);
-      gain2.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.6);
-      osc2.connect(gain2);
-      gain2.connect(audioCtx.destination);
-      osc2.start(time);
-      osc2.stop(time + dur * 0.6 + 0.1);
-
-      // 三次泛音 (3x) — 增加金属质感
-      const osc3 = audioCtx.createOscillator();
-      const gain3 = audioCtx.createGain();
-      osc3.type = 'sine';
-      osc3.frequency.setValueAtTime(frequency * 3, time);
-      gain3.gain.setValueAtTime(0, time);
-      gain3.gain.linearRampToValueAtTime(vol * 0.1, time + 0.003);
-      gain3.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.3);
-      osc3.connect(gain3);
-      gain3.connect(audioCtx.destination);
-      osc3.start(time);
-      osc3.stop(time + dur * 0.3 + 0.1);
+    // 播放音频的某个片段
+    function playAudioSlice(startOffset, duration, when, volume) {
+      if (!audioBuffer) return null;
+      const source = audioCtx.createBufferSource();
+      const gainNode = audioCtx.createGain();
+      source.buffer = audioBuffer;
+      gainNode.gain.setValueAtTime(volume || 1.0, when);
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      source.start(when, startOffset, duration);
+      return source;
     }
 
-    // 播放大钟敲击（报时用，低沉浑厚）
-    function playHourStrike(time) {
-      const freq = NOTE.E3;
-      const dur = 3.0;
-
-      // 基音（厚重）
-      const osc1 = audioCtx.createOscillator();
-      const gain1 = audioCtx.createGain();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(freq, time);
-      gain1.gain.setValueAtTime(0, time);
-      gain1.gain.linearRampToValueAtTime(0.35, time + 0.015);
-      gain1.gain.exponentialRampToValueAtTime(0.15, time + 0.8);
-      gain1.gain.exponentialRampToValueAtTime(0.001, time + dur);
-      osc1.connect(gain1);
-      gain1.connect(audioCtx.destination);
-      osc1.start(time);
-      osc1.stop(time + dur + 0.1);
-
-      // 低频泛音
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(freq * 2, time);
-      gain2.gain.setValueAtTime(0, time);
-      gain2.gain.linearRampToValueAtTime(0.15, time + 0.01);
-      gain2.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.5);
-      osc2.connect(gain2);
-      gain2.connect(audioCtx.destination);
-      osc2.start(time);
-      osc2.stop(time + dur * 0.5 + 0.1);
-
-      // 次低泛音
-      const osc3 = audioCtx.createOscillator();
-      const gain3 = audioCtx.createGain();
-      osc3.type = 'sine';
-      osc3.frequency.setValueAtTime(freq * 3, time);
-      gain3.gain.setValueAtTime(0, time);
-      gain3.gain.linearRampToValueAtTime(0.06, time + 0.005);
-      gain3.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.3);
-      osc3.connect(gain3);
-      gain3.connect(audioCtx.destination);
-      osc3.start(time);
-      osc3.stop(time + dur * 0.3 + 0.1);
-    }
+    // 从音频中提取单次敲钟声并重复播放指定次数
+    // 音频结构：0~18秒 前奏旋律，18~27.9秒 三声敲钟（每声约 3.3 秒）
+    const MELODY_START = 0;
+    const MELODY_END = 18.0;
+    const STRIKE_START = 18.0;      // 第一声敲钟起始
+    const SINGLE_STRIKE_DUR = 3.3;  // 单次敲钟时长
 
     function playChime(count, hour) {
       isChiming = true;
 
-      // 显示报时提示
       const indicator = document.getElementById('chimeIndicator');
       const chimeText = document.getElementById('chimeText');
 
       const hourDisplay = hour > 12 ? `下午${hour - 12}` : (hour === 12 ? '中午12' : `上午${hour}`);
-      chimeText.textContent = `${hourDisplay}点 · 西敏寺钟声`;
+      chimeText.textContent = `${hourDisplay}点 · 报时${count}声`;
       indicator.classList.add('active');
 
-      // 确保 AudioContext 处于 running 状态
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
 
-      let t = audioCtx.currentTime + 0.2;
-
-      // ---- 第一部分：西敏寺前奏旋律（4组变奏 × 4音） ----
-      const quarterNoteDur = 0.6;   // 四分音符时长
-      const halfNoteDur = 1.2;      // 二分音符时长（最后一个音）
-      const groupGap = 0.3;         // 组间间隔
-
-      for (let g = 0; g < 4; g++) {
-        const group = WESTMINSTER_MELODY[g];
-        for (let n = 0; n < 4; n++) {
-          const isLast = (n === 3);
-          const noteDur = isLast ? halfNoteDur : quarterNoteDur;
-          playBellNote(t, group[n], isLast ? 2.5 : 1.8, 0.2);
-          t += isLast ? halfNoteDur : quarterNoteDur;
-        }
-        t += groupGap;
+      if (!audioLoaded) {
+        console.warn('音频尚未加载完成');
+        isChiming = false;
+        indicator.classList.remove('active');
+        return;
       }
 
-      // ---- 第二部分：间隔后敲大钟 ----
-      t += 1.5; // 旋律结束后稍作停顿
+      const now = audioCtx.currentTime + 0.1;
 
-      const strikeInterval = 2.0; // 每下之间间隔
+      // ---- 第一部分：播放前奏旋律 ----
+      const melodyDuration = MELODY_END - MELODY_START;
+      playAudioSlice(MELODY_START, melodyDuration, now, 1.0);
+
+      // ---- 第二部分：前奏结束后，用单次敲钟声重复敲 count 次 ----
+      const strikeDelay = melodyDuration + 0.5; // 前奏播完后稍作停顿
       for (let i = 0; i < count; i++) {
-        playHourStrike(t + i * strikeInterval);
+        playAudioSlice(STRIKE_START, SINGLE_STRIKE_DUR, now + strikeDelay + i * SINGLE_STRIKE_DUR, 1.0);
       }
 
       // 报时完成后隐藏提示
-      const melodyDuration = (4 * (3 * quarterNoteDur + halfNoteDur + groupGap) + 1.5);
-      const strikeDuration = count * strikeInterval + 3;
-      const totalDuration = (melodyDuration + strikeDuration) * 1000;
-
+      const totalDuration = (strikeDelay + count * SINGLE_STRIKE_DUR + 1) * 1000;
       setTimeout(() => {
         indicator.classList.remove('active');
         isChiming = false;
@@ -686,13 +602,6 @@
       if (!audioActivated) {
         audioCtx.resume().then(() => {
           audioActivated = true;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          gain.gain.setValueAtTime(0, audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.01);
         });
       }
     });
