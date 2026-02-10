@@ -343,7 +343,7 @@
       cursor: pointer;
       transition: all 0.3s;
     " onmouseover="this.style.background='rgba(100,120,255,0.3)'" onmouseout="this.style.background='rgba(100,120,255,0.15)'">
-      🔔 测试报时（3声）
+      🔔 测试报时
     </button>
   </div>
 
@@ -501,9 +501,8 @@
     }
 
     // ==================== 真实座钟音效 ====================
-    // 音频文件：前部分是过渡旋律，后部分是 3 声敲钟
-    // 总时长约 27.9 秒
-    // 拆分点：前奏(旋律) 约 0 ~ 18秒，敲钟部分约 18 ~ 27.9秒（3声，每声约3.3秒）
+    // 音频文件：前部分是过渡旋律(0~17秒)，后部分是三声敲钟(17~27.9秒)
+    // 过渡旋律最后2秒渐弱淡出，三声敲钟最后2秒渐弱淡出
 
     const AUDIO_FILE = '大座钟的声音_爱给网_aigei_com.mp3';
     let audioBuffer = null;
@@ -522,25 +521,49 @@
         console.error('音频加载失败:', err);
       });
 
-    // 播放音频的某个片段
-    function playAudioSlice(startOffset, duration, when, volume) {
+    // 播放前奏旋律（最后2秒渐弱淡出）
+    function playMelody(when, volume) {
       if (!audioBuffer) return null;
       const source = audioCtx.createBufferSource();
       const gainNode = audioCtx.createGain();
       source.buffer = audioBuffer;
-      gainNode.gain.setValueAtTime(volume || 1.0, when);
+      const vol = volume || 1.0;
+      const melodyDuration = MELODY_END - MELODY_START;
+      gainNode.gain.setValueAtTime(vol, when);
+      // 最后2秒开始渐弱
+      gainNode.gain.setValueAtTime(vol, when + melodyDuration - 2.0);
+      gainNode.gain.linearRampToValueAtTime(0, when + melodyDuration);
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-      source.start(when, startOffset, duration);
+      source.start(when, MELODY_START, melodyDuration);
       return source;
     }
 
-    // 从音频中提取单次敲钟声并重复播放指定次数
-    // 音频结构：0~18秒 前奏旋律，18~27.9秒 三声敲钟（每声约 3.3 秒）
+    // 播放单次敲钟（最后2秒渐弱淡出）
+    function playStrike(when, volume) {
+      if (!audioBuffer) return;
+      const source = audioCtx.createBufferSource();
+      const gainNode = audioCtx.createGain();
+      source.buffer = audioBuffer;
+      const vol = volume || 1.0;
+      gainNode.gain.setValueAtTime(vol, when);
+      // 最后2秒开始渐弱
+      gainNode.gain.setValueAtTime(vol, when + SINGLE_STRIKE_DUR - 2.0);
+      gainNode.gain.linearRampToValueAtTime(0, when + SINGLE_STRIKE_DUR);
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      source.start(when, STRIKE_START, SINGLE_STRIKE_DUR);
+    }
+
+    // 音频结构分析：
+    // 0 ~ 17秒：前奏过渡旋律
+    // 17秒起：三声敲钟（每声约3.3秒，总到约27.9秒）
+    // 直接使用原始音频中的三声敲钟
     const MELODY_START = 0;
-    const MELODY_END = 18.0;
-    const STRIKE_START = 18.0;      // 第一声敲钟起始
-    const SINGLE_STRIKE_DUR = 3.3;  // 单次敲钟时长
+    const MELODY_END = 17.0;
+    const STRIKE_START = 17.0;      // 敲钟起始
+    const SINGLE_STRIKE_DUR = 10.9; // 从17秒到27.9秒，三声钟声完整片段
+    const STRIKE_INTERVAL = 3.2;    // 预留，暂不用
 
     function playChime(count, hour) {
       isChiming = true;
@@ -565,18 +588,16 @@
 
       const now = audioCtx.currentTime + 0.1;
 
-      // ---- 第一部分：播放前奏旋律 ----
-      const melodyDuration = MELODY_END - MELODY_START;
-      playAudioSlice(MELODY_START, melodyDuration, now, 1.0);
+      // ---- 第一部分：播放前奏旋律（最后2秒渐弱）----
+      playMelody(now, 1.0);
 
-      // ---- 第二部分：前奏结束后，用单次敲钟声重复敲 count 次 ----
-      const strikeDelay = melodyDuration + 0.5; // 前奏播完后稍作停顿
-      for (let i = 0; i < count; i++) {
-        playAudioSlice(STRIKE_START, SINGLE_STRIKE_DUR, now + strikeDelay + i * SINGLE_STRIKE_DUR, 1.0);
-      }
+      // ---- 第二部分：前奏结束后，播放原始三声敲钟（最后2秒渐弱）----
+      const melodyDuration = MELODY_END - MELODY_START;
+      const strikeDelay = melodyDuration + 0.5;
+      playStrike(now + strikeDelay, 1.0);
 
       // 报时完成后隐藏提示
-      const totalDuration = (strikeDelay + count * SINGLE_STRIKE_DUR + 1) * 1000;
+      const totalDuration = (strikeDelay + SINGLE_STRIKE_DUR + 2) * 1000;
       setTimeout(() => {
         indicator.classList.remove('active');
         isChiming = false;
