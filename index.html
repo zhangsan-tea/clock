@@ -564,28 +564,25 @@
       return melodyBuffer.duration;
     }
 
-    // 立即播放一次敲钟（isLast 时追加2秒渐弱）
-    function playStrikeNow(vol, isLast) {
+    // 重叠时间（秒）
+    const STRIKE_OVERLAP = 0.4;
+
+    // 用 Web Audio API 精确调度播放敲钟（避免 setTimeout 的延迟抖动）
+    function playStrikeAt(when, vol, isLast) {
       if (!strikeBuffer) return;
-      if (audioCtx.state === 'suspended') audioCtx.resume();
       const source = audioCtx.createBufferSource();
       const gainNode = audioCtx.createGain();
       source.buffer = strikeBuffer;
-      gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(vol, when);
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
       if (isLast) {
-        // 原声播完后追加2秒渐弱
         const dur = strikeBuffer.duration;
-        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime + dur);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur + 2.0);
+        gainNode.gain.setValueAtTime(vol, when + dur);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, when + dur + 2.0);
       }
-      source.start(0);
-      console.log('敲钟播放, 音量:', vol, '最后一声:', isLast);
+      source.start(when);
     }
-
-    // 敲钟间隔（毫秒）
-    const STRIKE_INTERVAL_MS = 3500;
 
     // 整点报时：过渡音 + count 声敲钟
     function playChime(count, hour, vol) {
@@ -609,22 +606,20 @@
       // 第一部分：播放过渡旋律
       const melodyDur = playMelodyNow(volume);
 
-      // 第二部分：过渡旋律结束后，用 setTimeout 逐声敲钟
-      let played = 0;
-      function strikeNext() {
-        if (played >= count) return;
-        const isLast = (played === count - 1);
-        playStrikeNow(volume, isLast);
-        played++;
-        if (played < count) {
-          setTimeout(strikeNext, STRIKE_INTERVAL_MS);
-        }
+      // 第二部分：用 Web Audio API 精确调度所有敲钟
+      // 动态间隔 = 敲钟音频时长 - 重叠时间
+      const strikeDur = strikeBuffer.duration;
+      const interval = strikeDur - STRIKE_OVERLAP;
+      const baseTime = audioCtx.currentTime + melodyDur - 0.1; // 过渡音结束前0.1秒
+
+      for (let i = 0; i < count; i++) {
+        const isLast = (i === count - 1);
+        playStrikeAt(baseTime + i * interval, volume, isLast);
       }
-      // 过渡音结束后300ms开始敲钟
-      setTimeout(strikeNext, (melodyDur + 0.3) * 1000);
+      console.log('敲钟调度完成, 间隔:', interval.toFixed(2), '秒, 音频时长:', strikeDur.toFixed(2), '秒, 重叠:', STRIKE_OVERLAP, '秒');
 
       // 报时完成后隐藏提示
-      const totalMs = (melodyDur + 0.3) * 1000 + count * STRIKE_INTERVAL_MS + 3000;
+      const totalMs = (melodyDur - 0.1 + count * interval + strikeDur + 2) * 1000;
       setTimeout(() => {
         indicator.classList.remove('active');
         isChiming = false;
@@ -649,7 +644,7 @@
         return;
       }
 
-      playStrikeNow(0.6, true);
+      playStrikeAt(audioCtx.currentTime + 0.05, 0.6, true);
 
       setTimeout(() => {
         indicator.classList.remove('active');
