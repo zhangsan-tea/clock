@@ -535,17 +535,63 @@
     const STRIKE_FILE = '敲钟.mp3';
     let melodyBuffer = null;
     let strikeBuffer = null;
+    let halfStrikeBuffer = null; // 半点专用：预渲染的带衰减钟声
     let audioLoaded = false;
 
-    // 预加载两个音频文件
+    // 用 OfflineAudioContext 预渲染半点专用音频：
+    // 将敲钟音频渲染成一段足够长的、自带平滑衰减到0的完整音频
+    function renderHalfStrikeBuffer(srcBuffer) {
+      const sampleRate = srcBuffer.sampleRate;
+      const channels = srcBuffer.numberOfChannels;
+      const srcDur = srcBuffer.duration;
+      const totalDur = srcDur + 8; // 敲钟音频时长 + 8秒自然余韵
+      const totalFrames = Math.ceil(totalDur * sampleRate);
+      const srcFrames = srcBuffer.length;
+
+      // 手动构建音频buffer：将原始音频复制到前段，后段填零（静音）
+      // 然后对整段应用衰减曲线
+      const outBuffer = new AudioBuffer({
+        numberOfChannels: channels,
+        length: totalFrames,
+        sampleRate: sampleRate
+      });
+
+      // 复制原始音频数据到输出buffer的开头
+      for (let ch = 0; ch < channels; ch++) {
+        const srcData = srcBuffer.getChannelData(ch);
+        const outData = outBuffer.getChannelData(ch);
+        // 复制原始音频
+        for (let i = 0; i < srcFrames && i < totalFrames; i++) {
+          outData[i] = srcData[i];
+        }
+        // 剩余部分保持为0（静音），AudioBuffer默认就是0
+      }
+
+      // 对整段音频应用衰减曲线：0.6 * (1 - t)^1.5
+      for (let ch = 0; ch < channels; ch++) {
+        const outData = outBuffer.getChannelData(ch);
+        for (let i = 0; i < totalFrames; i++) {
+          const t = i / (totalFrames - 1);
+          const gain = 0.6 * Math.pow(1 - t, 1.5);
+          outData[i] *= gain;
+        }
+      }
+
+      return outBuffer;
+    }
+
+    // 预加载两个音频文件，然后渲染半点专用音频
     Promise.all([
       fetch(MELODY_FILE).then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf)),
       fetch(STRIKE_FILE).then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf))
     ]).then(([mBuf, sBuf]) => {
       melodyBuffer = mBuf;
       strikeBuffer = sBuf;
-      audioLoaded = true;
       console.log('音频加载完成 - 过渡音:', mBuf.duration.toFixed(2), '秒, 敲钟:', sBuf.duration.toFixed(2), '秒');
+      // 预渲染半点专用音频（同步，直接操作采样数据）
+      halfStrikeBuffer = renderHalfStrikeBuffer(sBuf);
+      audioLoaded = true;
+      console.log('半点专用音频渲染完成:', halfStrikeBuffer.duration.toFixed(2), '秒');
     }).catch(err => {
       console.error('音频加载失败:', err);
     });
@@ -573,15 +619,28 @@
       const source = audioCtx.createBufferSource();
       const gainNode = audioCtx.createGain();
       source.buffer = strikeBuffer;
-      gainNode.gain.setValueAtTime(vol, when);
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
       if (isLast) {
+        // 最后一声：让音频循环播放以覆盖整个衰减周期，然后在衰减结束时停止
         const dur = strikeBuffer.duration;
-        gainNode.gain.setValueAtTime(vol, when + dur);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, when + dur + 2.0);
+        const fadeTotal = dur + 6;
+        source.loop = true;
+        source.loopStart = 0;
+        source.loopEnd = dur;
+        const steps = 256;
+        const curve = new Float32Array(steps);
+        for (let i = 0; i < steps; i++) {
+          const t = i / (steps - 1);
+          curve[i] = vol * Math.pow(1 - t, 1.5);
+        }
+        gainNode.gain.setValueCurveAtTime(curve, when, fadeTotal);
+        source.start(when);
+        source.stop(when + fadeTotal);
+      } else {
+        gainNode.gain.setValueAtTime(vol, when);
+        source.start(when);
       }
-      source.start(when);
     }
 
     // 整点报时：过渡音 + count 声敲钟
@@ -626,7 +685,7 @@
       }, totalMs);
     }
 
-    // 半点报时：只响一声敲钟（音量60%），无过渡音
+    // 半点报时：播放预渲染好的带衰减钟声（一次性播放，无循环）
     function playHalfChime(hour) {
       isChiming = true;
 
@@ -637,19 +696,25 @@
       chimeText.textContent = `${hourDisplay}点半 · 半点报时`;
       indicator.classList.add('active');
 
-      if (!audioLoaded) {
+      if (!audioLoaded || !halfStrikeBuffer) {
         console.warn('音频尚未加载完成');
         isChiming = false;
         indicator.classList.remove('active');
         return;
       }
 
-      playStrikeAt(audioCtx.currentTime + 0.05, 0.6, true);
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const source = audioCtx.createBufferSource();
+      source.buffer = halfStrikeBuffer;
+      source.connect(audioCtx.destination);
+      source.start(0);
+
+      console.log('半点报时 - 播放预渲染音频, 时长:', halfStrikeBuffer.duration.toFixed(2), '秒');
 
       setTimeout(() => {
         indicator.classList.remove('active');
         isChiming = false;
-      }, (strikeBuffer.duration + 2 + 1) * 1000);
+      }, (halfStrikeBuffer.duration + 0.5) * 1000);
     }
 
     // 请求通知权限（用于检测勿扰状态）
