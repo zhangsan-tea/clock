@@ -343,7 +343,20 @@
       cursor: pointer;
       transition: all 0.3s;
     " onmouseover="this.style.background='rgba(100,120,255,0.3)'" onmouseout="this.style.background='rgba(100,120,255,0.15)'">
-      🔔 测试报时
+      🔔 测试报时（3声）
+    </button>
+    <button id="testHalfChimeBtn" style="
+      margin-left: 8px;
+      padding: 6px 18px;
+      background: rgba(100, 120, 255, 0.15);
+      border: 1px solid rgba(100, 120, 255, 0.3);
+      border-radius: 20px;
+      color: rgba(200, 210, 255, 0.8);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    " onmouseover="this.style.background='rgba(100,120,255,0.3)'" onmouseout="this.style.background='rgba(100,120,255,0.15)'">
+      🔔 测试半点（1声）
     </button>
   </div>
 
@@ -420,6 +433,7 @@
     // ==================== 整点报时 ====================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let lastChimeHour = -1;
+    let lastHalfChimeHour = -1;
     let isChiming = false;
 
     // 系统状态检测
@@ -485,6 +499,7 @@
     }
 
     function checkChime(hours, minutes, seconds) {
+      // 整点报时
       if (minutes === 0 && seconds === 0 && !isChiming && lastChimeHour !== hours) {
         if (canChime(hours)) {
           lastChimeHour = hours;
@@ -494,79 +509,88 @@
           lastChimeHour = hours;
         }
       }
-      // 过了整点则重置
+      // 半点报时（音量60%）
+      if (minutes === 30 && seconds === 0 && !isChiming && lastHalfChimeHour !== hours) {
+        if (canChime(hours)) {
+          lastHalfChimeHour = hours;
+          playHalfChime(hours);
+        } else {
+          lastHalfChimeHour = hours;
+        }
+      }
+      // 过了整点/半点则重置
       if (minutes !== 0) {
         lastChimeHour = -1;
+      }
+      if (minutes !== 30) {
+        lastHalfChimeHour = -1;
       }
     }
 
     // ==================== 真实座钟音效 ====================
-    // 音频文件：前部分是过渡旋律(0~17秒)，后部分是三声敲钟(17~27.9秒)
-    // 过渡旋律最后2秒渐弱淡出，三声敲钟最后2秒渐弱淡出
+    // 过渡音.mp3：过渡旋律
+    // 敲钟.mp3：单次敲钟声
 
-    const AUDIO_FILE = '大座钟的声音_爱给网_aigei_com.mp3';
-    let audioBuffer = null;
+    const MELODY_FILE = '过渡音.mp3';
+    const STRIKE_FILE = '敲钟.mp3';
+    let melodyBuffer = null;
+    let strikeBuffer = null;
     let audioLoaded = false;
 
-    // 预加载音频文件并解码
-    fetch(AUDIO_FILE)
-      .then(response => response.arrayBuffer())
-      .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
-      .then(buffer => {
-        audioBuffer = buffer;
-        audioLoaded = true;
-        console.log('音频加载完成，时长:', buffer.duration.toFixed(2), '秒');
-      })
-      .catch(err => {
-        console.error('音频加载失败:', err);
-      });
+    // 预加载两个音频文件
+    Promise.all([
+      fetch(MELODY_FILE).then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf)),
+      fetch(STRIKE_FILE).then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf))
+    ]).then(([mBuf, sBuf]) => {
+      melodyBuffer = mBuf;
+      strikeBuffer = sBuf;
+      audioLoaded = true;
+      console.log('音频加载完成 - 过渡音:', mBuf.duration.toFixed(2), '秒, 敲钟:', sBuf.duration.toFixed(2), '秒');
+    }).catch(err => {
+      console.error('音频加载失败:', err);
+    });
 
-    // 播放前奏旋律（最后2秒渐弱淡出）
-    function playMelody(when, volume) {
-      if (!audioBuffer) return null;
+    // 立即播放一次过渡旋律（返回时长）
+    function playMelodyNow(vol) {
+      if (!melodyBuffer) return 0;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const source = audioCtx.createBufferSource();
       const gainNode = audioCtx.createGain();
-      source.buffer = audioBuffer;
-      const vol = volume || 1.0;
-      const melodyDuration = MELODY_END - MELODY_START;
-      gainNode.gain.setValueAtTime(vol, when);
-      // 最后2秒开始渐弱
-      gainNode.gain.setValueAtTime(vol, when + melodyDuration - 2.0);
-      gainNode.gain.linearRampToValueAtTime(0, when + melodyDuration);
+      source.buffer = melodyBuffer;
+      gainNode.gain.value = vol;
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-      source.start(when, MELODY_START, melodyDuration);
-      return source;
+      source.start(0);
+      return melodyBuffer.duration;
     }
 
-    // 播放单次敲钟（最后2秒渐弱淡出）
-    function playStrike(when, volume) {
-      if (!audioBuffer) return;
+    // 立即播放一次敲钟（isLast 时追加2秒渐弱）
+    function playStrikeNow(vol, isLast) {
+      if (!strikeBuffer) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const source = audioCtx.createBufferSource();
       const gainNode = audioCtx.createGain();
-      source.buffer = audioBuffer;
-      const vol = volume || 1.0;
-      gainNode.gain.setValueAtTime(vol, when);
-      // 最后2秒开始渐弱
-      gainNode.gain.setValueAtTime(vol, when + SINGLE_STRIKE_DUR - 2.0);
-      gainNode.gain.linearRampToValueAtTime(0, when + SINGLE_STRIKE_DUR);
+      source.buffer = strikeBuffer;
+      gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-      source.start(when, STRIKE_START, SINGLE_STRIKE_DUR);
+      if (isLast) {
+        // 原声播完后追加2秒渐弱
+        const dur = strikeBuffer.duration;
+        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime + dur);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur + 2.0);
+      }
+      source.start(0);
+      console.log('敲钟播放, 音量:', vol, '最后一声:', isLast);
     }
 
-    // 音频结构分析：
-    // 0 ~ 17秒：前奏过渡旋律
-    // 17秒起：三声敲钟（每声约3.3秒，总到约27.9秒）
-    // 直接使用原始音频中的三声敲钟
-    const MELODY_START = 0;
-    const MELODY_END = 17.0;
-    const STRIKE_START = 17.0;      // 敲钟起始
-    const SINGLE_STRIKE_DUR = 10.9; // 从17秒到27.9秒，三声钟声完整片段
-    const STRIKE_INTERVAL = 3.2;    // 预留，暂不用
+    // 敲钟间隔（毫秒）
+    const STRIKE_INTERVAL_MS = 3500;
 
-    function playChime(count, hour) {
+    // 整点报时：过渡音 + count 声敲钟
+    function playChime(count, hour, vol) {
       isChiming = true;
+      const volume = vol || 1.0;
 
       const indicator = document.getElementById('chimeIndicator');
       const chimeText = document.getElementById('chimeText');
@@ -575,9 +599,48 @@
       chimeText.textContent = `${hourDisplay}点 · 报时${count}声`;
       indicator.classList.add('active');
 
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+      if (!audioLoaded) {
+        console.warn('音频尚未加载完成');
+        isChiming = false;
+        indicator.classList.remove('active');
+        return;
       }
+
+      // 第一部分：播放过渡旋律
+      const melodyDur = playMelodyNow(volume);
+
+      // 第二部分：过渡旋律结束后，用 setTimeout 逐声敲钟
+      let played = 0;
+      function strikeNext() {
+        if (played >= count) return;
+        const isLast = (played === count - 1);
+        playStrikeNow(volume, isLast);
+        played++;
+        if (played < count) {
+          setTimeout(strikeNext, STRIKE_INTERVAL_MS);
+        }
+      }
+      // 过渡音结束后300ms开始敲钟
+      setTimeout(strikeNext, (melodyDur + 0.3) * 1000);
+
+      // 报时完成后隐藏提示
+      const totalMs = (melodyDur + 0.3) * 1000 + count * STRIKE_INTERVAL_MS + 3000;
+      setTimeout(() => {
+        indicator.classList.remove('active');
+        isChiming = false;
+      }, totalMs);
+    }
+
+    // 半点报时：只响一声敲钟（音量60%），无过渡音
+    function playHalfChime(hour) {
+      isChiming = true;
+
+      const indicator = document.getElementById('chimeIndicator');
+      const chimeText = document.getElementById('chimeText');
+
+      const hourDisplay = hour > 12 ? `下午${hour - 12}` : (hour === 12 ? '中午12' : `上午${hour}`);
+      chimeText.textContent = `${hourDisplay}点半 · 半点报时`;
+      indicator.classList.add('active');
 
       if (!audioLoaded) {
         console.warn('音频尚未加载完成');
@@ -586,22 +649,12 @@
         return;
       }
 
-      const now = audioCtx.currentTime + 0.1;
+      playStrikeNow(0.6, true);
 
-      // ---- 第一部分：播放前奏旋律（最后2秒渐弱）----
-      playMelody(now, 1.0);
-
-      // ---- 第二部分：前奏结束后，播放原始三声敲钟（最后2秒渐弱）----
-      const melodyDuration = MELODY_END - MELODY_START;
-      const strikeDelay = melodyDuration + 0.5;
-      playStrike(now + strikeDelay, 1.0);
-
-      // 报时完成后隐藏提示
-      const totalDuration = (strikeDelay + SINGLE_STRIKE_DUR + 2) * 1000;
       setTimeout(() => {
         indicator.classList.remove('active');
         isChiming = false;
-      }, totalDuration);
+      }, (strikeBuffer.duration + 2 + 1) * 1000);
     }
 
     // 请求通知权限（用于检测勿扰状态）
@@ -630,7 +683,7 @@
     // 初始状态更新
     updateStatusDisplay();
 
-    // 测试报时按钮
+    // 测试报时按钮（固定3声）
     document.getElementById('testChimeBtn').addEventListener('click', () => {
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
@@ -638,8 +691,18 @@
       audioActivated = true;
       const now = new Date();
       const h = now.getHours();
-      const chimeCount = h % 12 === 0 ? 12 : h % 12;
-      playChime(chimeCount, h);
+      playChime(3, h);
+    });
+
+    // 测试半点报时按钮（1声，音量60%）
+    document.getElementById('testHalfChimeBtn').addEventListener('click', () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      audioActivated = true;
+      const now = new Date();
+      const h = now.getHours();
+      playHalfChime(h);
     });
   </script>
 </body>
