@@ -284,10 +284,101 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+
+    /* ===== 屏保模式 ===== */
+    body.screensaver-mode {
+      cursor: none;
+    }
+
+    body.screensaver-mode .status-bar,
+    body.screensaver-mode .digital-time,
+    body.screensaver-mode .date-display {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+    }
+
+    body.screensaver-mode .chime-indicator {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    /* 屏保进入倒计时提示 */
+    .screensaver-countdown {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: rgba(30, 32, 53, 0.85);
+      border: 1px solid rgba(100, 120, 255, 0.2);
+      border-radius: 20px;
+      color: rgba(200, 210, 255, 0.6);
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
+
+    .screensaver-countdown.visible {
+      opacity: 1;
+    }
+
+    /* 屏保设置按钮 */
+    .screensaver-settings {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 1.5s ease;
+    }
+
+    body.screensaver-mode .screensaver-settings {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .screensaver-toggle {
+      padding: 6px 16px;
+      background: rgba(100, 120, 255, 0.15);
+      border: 1px solid rgba(100, 120, 255, 0.3);
+      border-radius: 20px;
+      color: rgba(200, 210, 255, 0.8);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .screensaver-toggle:hover {
+      background: rgba(100, 120, 255, 0.3);
+    }
+
+    .screensaver-toggle.active {
+      background: rgba(100, 120, 255, 0.35);
+      border-color: rgba(100, 120, 255, 0.6);
+    }
+
+    .screensaver-info {
+      color: rgba(150, 160, 200, 0.5);
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
   <div class="bg-glow"></div>
+
+  <!-- 屏保设置 -->
+  <div class="screensaver-settings">
+    <button class="screensaver-toggle active" id="screensaverToggle">🖥 屏保：开启</button>
+    <span class="screensaver-info" id="screensaverInfo">无操作 60 秒后进入屏保</span>
+  </div>
+
+  <!-- 屏保倒计时提示 -->
+  <div class="screensaver-countdown" id="screensaverCountdown"></div>
 
   <div class="chime-indicator" id="chimeIndicator">
     <span class="bell-icon">🔔</span>
@@ -763,6 +854,165 @@
       const now = new Date();
       const h = now.getHours();
       playHalfChime(h);
+    });
+
+    // ==================== 屏保模式 ====================
+    let screensaverEnabled = true;
+    const SCREENSAVER_TIMEOUT = 60; // 秒
+    const COUNTDOWN_SHOW_AT = 10;   // 最后10秒显示倒计时
+    let idleSeconds = 0;
+    let isScreensaver = false;
+
+    // 全局主音量节点：所有音频通过此节点输出
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.value = 1.0;
+    masterGain.connect(audioCtx.destination);
+
+    // 重写音频播放函数，将输出连接到 masterGain 而非 audioCtx.destination
+    // 覆盖 playMelodyNow
+    const _origPlayMelodyNow = playMelodyNow;
+    playMelodyNow = function(vol) {
+      if (!melodyBuffer) return 0;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const source = audioCtx.createBufferSource();
+      const gainNode = audioCtx.createGain();
+      source.buffer = melodyBuffer;
+      gainNode.gain.value = vol;
+      source.connect(gainNode);
+      gainNode.connect(masterGain);
+      source.start(0);
+      return melodyBuffer.duration;
+    };
+
+    // 覆盖 playStrikeAt
+    const _origPlayStrikeAt = playStrikeAt;
+    playStrikeAt = function(when, vol, isLast) {
+      if (!strikeBuffer) return;
+      const source = audioCtx.createBufferSource();
+      const gainNode = audioCtx.createGain();
+      source.buffer = strikeBuffer;
+      source.connect(gainNode);
+      gainNode.connect(masterGain);
+      if (isLast) {
+        const dur = strikeBuffer.duration;
+        const fadeTotal = dur + 6;
+        source.loop = true;
+        source.loopStart = 0;
+        source.loopEnd = dur;
+        const steps = 256;
+        const curve = new Float32Array(steps);
+        for (let i = 0; i < steps; i++) {
+          const t = i / (steps - 1);
+          curve[i] = vol * Math.pow(1 - t, 1.5);
+        }
+        gainNode.gain.setValueCurveAtTime(curve, when, fadeTotal);
+        source.start(when);
+        source.stop(when + fadeTotal);
+      } else {
+        gainNode.gain.setValueAtTime(vol, when);
+        source.start(when);
+      }
+    };
+
+    // 覆盖 playHalfChime 中的音频播放（通过修改函数）
+    const _origPlayHalfChime = playHalfChime;
+    playHalfChime = function(hour) {
+      isChiming = true;
+      const indicator = document.getElementById('chimeIndicator');
+      const chimeText = document.getElementById('chimeText');
+      const hourDisplay = hour > 12 ? `下午${hour - 12}` : (hour === 12 ? '中午12' : `上午${hour}`);
+      chimeText.textContent = `${hourDisplay}点半 · 半点报时`;
+      indicator.classList.add('active');
+      if (!audioLoaded || !halfStrikeBuffer) {
+        console.warn('音频尚未加载完成');
+        isChiming = false;
+        indicator.classList.remove('active');
+        return;
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const source = audioCtx.createBufferSource();
+      source.buffer = halfStrikeBuffer;
+      source.connect(masterGain);
+      source.start(0);
+      console.log('半点报时 - 播放预渲染音频, 时长:', halfStrikeBuffer.duration.toFixed(2), '秒');
+      setTimeout(() => {
+        indicator.classList.remove('active');
+        isChiming = false;
+      }, (halfStrikeBuffer.duration + 0.5) * 1000);
+    };
+
+    const countdownEl = document.getElementById('screensaverCountdown');
+    const toggleBtn = document.getElementById('screensaverToggle');
+    const infoEl = document.getElementById('screensaverInfo');
+
+    function enterScreensaver() {
+      if (isScreensaver) return;
+      isScreensaver = true;
+      document.body.classList.add('screensaver-mode');
+      countdownEl.classList.remove('visible');
+      // 音量渐变到 50%
+      masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 1.5);
+      console.log('进入屏保模式，音量降至 50%');
+    }
+
+    function exitScreensaver() {
+      if (!isScreensaver) return;
+      isScreensaver = false;
+      idleSeconds = 0;
+      document.body.classList.remove('screensaver-mode');
+      countdownEl.classList.remove('visible');
+      // 音量恢复到 100%
+      masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.5);
+      console.log('退出屏保模式，音量恢复 100%');
+    }
+
+    function resetIdle() {
+      if (isScreensaver) {
+        exitScreensaver();
+      }
+      idleSeconds = 0;
+      countdownEl.classList.remove('visible');
+    }
+
+    // 用户活动事件监听
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+      document.addEventListener(evt, resetIdle, { passive: true });
+    });
+
+    // 每秒检查空闲时间
+    setInterval(() => {
+      if (!screensaverEnabled || isScreensaver) return;
+      idleSeconds++;
+      const remaining = SCREENSAVER_TIMEOUT - idleSeconds;
+
+      if (remaining <= 0) {
+        enterScreensaver();
+      } else if (remaining <= COUNTDOWN_SHOW_AT) {
+        countdownEl.textContent = `${remaining} 秒后进入屏保模式...`;
+        countdownEl.classList.add('visible');
+      }
+    }, 1000);
+
+    // 屏保开关按钮
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      screensaverEnabled = !screensaverEnabled;
+      if (screensaverEnabled) {
+        toggleBtn.textContent = '🖥 屏保：开启';
+        toggleBtn.classList.add('active');
+        infoEl.textContent = '无操作 60 秒后进入屏保';
+        idleSeconds = 0;
+      } else {
+        toggleBtn.textContent = '🖥 屏保：关闭';
+        toggleBtn.classList.remove('active');
+        infoEl.textContent = '';
+        exitScreensaver();
+        countdownEl.classList.remove('visible');
+      }
     });
   </script>
 </body>
