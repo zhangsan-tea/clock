@@ -62,6 +62,24 @@
       border-radius: 24px; background: rgba(255, 253, 248, .82); box-shadow: 0 10px 28px rgba(28, 44, 48, .08);
       border: 1px solid rgba(31,42,46,.10);
     }
+    .part-divider {
+      margin: 28px 0 18px;
+      padding: 22px 16px 18px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(8,61,68,.96), rgba(14,95,105,.88));
+      color: #fff;
+      box-shadow: 0 18px 38px rgba(8,61,68,.22);
+      position: relative;
+      overflow: hidden;
+    }
+    .part-divider::after {
+      content: ""; position: absolute; right: -34px; top: -42px; width: 132px; height: 132px;
+      border-radius: 50%; background: rgba(232,156,65,.30);
+    }
+    .part-kicker { font-size: 12px; letter-spacing: .24em; font-weight: 800; color: rgba(255,255,255,.72); text-transform: uppercase; }
+    .part-rule { width: 100%; height: 1px; margin: 12px 0 13px; background: linear-gradient(90deg, rgba(232,156,65,.95), rgba(255,255,255,.16)); }
+    .part-divider h2 { margin: 0 0 12px; color: #fff; font-size: 25px; line-height: 1.18; letter-spacing: -.04em; }
+    .part-divider p { color: rgba(255,255,255,.88); }
     h2 { margin: 0 0 12px; color: var(--brand-dark); font-size: 22px; line-height: 1.22; letter-spacing: -.035em; }
     h3 { margin: 17px 0 7px; color: #7c4b13; font-size: 17px; line-height: 1.35; }
     p { margin: 8px 0; font-size: 16px; }
@@ -131,16 +149,17 @@
       <p class="subtitle">按行程整理｜布罗莫 · 巴厘岛 · 佩妮达 · 乌布</p>
     </header>
     <nav class="quick-nav" aria-label="页面快捷导航">
-      <a href="#bromo">火山</a><a href="#island">海岛</a><a href="#penida">佩妮达</a><a href="#temple">寺庙</a><a href="#packing">清单</a><a href="#pitfalls">避坑</a>
+      <a href="#bromo">火山</a><a href="#island">海岛</a><a href="#penida">佩妮达</a><a href="#temple">寺庙</a><a href="#packing-list">行李清单</a><a href="#pitfalls">避坑</a>
     </nav>
     <main>
-      <p class="callout">你这条线路其实很典型，但有一个很多人会低估的点：</p>
-<p>👉 它不是“一个热带海岛旅行”，而是“海岛 + 火山 + 海上 + 丛林 + 日出作息”的组合</p>
-<p class="callout">也就是说：</p>
-<p class="bullet"><span></span>同一趟行程，会经历“很热 + 很晒 + 很湿 + 很冷 + 很早起”</p>
-<p>我帮你按“真实使用场景”来拆一份准备清单（尽量避免带一堆没用的东西）。</p>
-<section class="section-card"><h2>🌋 一、先看一个关键场景：布罗莫火山（日出=最冷）</h2>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+      <section class="section-card" id="intro-1">
+          
+          
+          <p class="callout">你这条线路其实很典型，但有一个很多人会低估的点：</p><p>👉 它不是“一个热带海岛旅行”，而是“海岛 + 火山 + 海上 + 丛林 + 日出作息”的组合</p><p class="callout">也就是说：</p><p class="bullet"><span></span>同一趟行程，会经历“很热 + 很晒 + 很湿 + 很冷 + 很早起”</p><p>我帮你按“真实使用场景”来拆一份准备清单（尽量避免带一堆没用的东西）。</p>
+        </section>
+<section class="section-card" id="bromo">
+          <h2>🌋 一、先看一个关键场景：布罗莫火山（日出=最冷）</h2>
+          <div class="section-gallery" aria-label="本节相关照片横向滑动区域">
         <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
         <div class="rail"><button class="photo-card" data-src="assets/photo-01.jpg" aria-label="放大查看第 1 张">
                     <img src="assets/photo-01.jpg" alt="旅行提示配图 01" loading="lazy">
@@ -150,29 +169,16 @@
                     <span>02</span>
                 </button></div>
       </div>
-<p class="callout">👉 这是全程最容易“翻车”的地方：</p>
-<p class="callout">时间：凌晨2–3点出发</p>
-<p class="callout">温度：5–10°C（体感更低）</p>
-<p class="bullet"><span></span>风大 + 火山灰</p>
-<h3>✅ 必带（重点）</h3>
-<p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣（一定要）</p>
-<p class="bullet"><span></span>长裤（不要短裤去）</p>
-<p class="bullet"><span></span>运动鞋（防灰、防滑）</p>
-<p class="bullet"><span></span>口罩（防火山灰）</p>
-<p class="bullet"><span></span>围巾或头巾（挡风）</p>
-<p class="callout">👉 很多人在这里：穿着短袖去 → 冻到怀疑人生</p>
-</section>
-<section class="section-card"><h2>🏝 二、巴厘岛 &amp; 佩妮达岛（日常=热+晒+湿）</h2>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+          <p class="callout">👉 这是全程最容易“翻车”的地方：</p><p class="callout">时间：凌晨2–3点出发</p><p class="callout">温度：5–10°C（体感更低）</p><p class="bullet"><span></span>风大 + 火山灰</p><h3>✅ 必带（重点）</h3><p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣（一定要）</p><p class="bullet"><span></span>长裤（不要短裤去）</p><p class="bullet"><span></span>运动鞋（防灰、防滑）</p><p class="bullet"><span></span>口罩（防火山灰）</p><p class="bullet"><span></span>围巾或头巾（挡风）</p><p class="callout">👉 很多人在这里：穿着短袖去 → 冻到怀疑人生</p>
+        </section>
+<section class="section-card" id="island">
+          <h2>🏝 二、巴厘岛 &amp; 佩妮达岛（日常=热+晒+湿）</h2>
+          <div class="section-gallery" aria-label="本节相关照片横向滑动区域">
         <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
         <div class="rail"><button class="photo-card" data-src="assets/photo-03.jpg" aria-label="放大查看第 3 张">
                     <img src="assets/photo-03.jpg" alt="旅行提示配图 03" loading="lazy">
                     <span>03</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-04.jpg" aria-label="放大查看第 4 张">
+                </button><button class="photo-card" data-src="assets/photo-04.jpg" aria-label="放大查看第 4 张">
                     <img src="assets/photo-04.jpg" alt="旅行提示配图 04" loading="lazy">
                     <span>04</span>
                 </button><button class="photo-card" data-src="assets/photo-05.jpg" aria-label="放大查看第 5 张">
@@ -180,19 +186,11 @@
                     <span>05</span>
                 </button></div>
       </div>
-<p class="callout">👉 这里的关键词只有三个：暴晒 + 紫外线强 + 湿热</p>
-<h3>👕 衣物建议</h3>
-<p class="bullet"><span></span>速干T恤 × 3–5件</p>
-<p class="bullet"><span></span>短裤 × 2–3条</p>
-<p class="bullet"><span></span>泳衣 × 1–2套</p>
-<p class="bullet"><span></span>防晒外套（很有用）</p>
-<p class="bullet"><span></span>拖鞋 + 运动鞋各一双</p>
-<p class="callout">👉 小建议：</p>
-<p class="bullet"><span></span>不用带太多“好看但不透气”的衣服</p>
-<p class="bullet"><span></span>这里是“功能性优先”</p>
-</section>
-<section class="section-card"><h2>🌊 三、佩妮达岛（重点提醒：不只是“美景”，还有“强度”）</h2>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+          <p class="callout">👉 这里的关键词只有三个：暴晒 + 紫外线强 + 湿热</p><h3>👕 衣物建议</h3><p class="bullet"><span></span>速干T恤 × 3–5件</p><p class="bullet"><span></span>短裤 × 2–3条</p><p class="bullet"><span></span>泳衣 × 1–2套</p><p class="bullet"><span></span>防晒外套（很有用）</p><p class="bullet"><span></span>拖鞋 + 运动鞋各一双</p><p class="callout">👉 小建议：</p><p class="bullet"><span></span>不用带太多“好看但不透气”的衣服</p><p class="bullet"><span></span>这里是“功能性优先”</p>
+        </section>
+<section class="section-card" id="penida">
+          <h2>🌊 三、佩妮达岛（重点提醒：不只是“美景”，还有“强度”）</h2>
+          <div class="section-gallery" aria-label="本节相关照片横向滑动区域">
         <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
         <div class="rail"><button class="photo-card" data-src="assets/photo-06.jpg" aria-label="放大查看第 6 张">
                     <img src="assets/photo-06.jpg" alt="旅行提示配图 06" loading="lazy">
@@ -200,18 +198,10 @@
                 </button><button class="photo-card" data-src="assets/photo-07.jpg" aria-label="放大查看第 7 张">
                     <img src="assets/photo-07.jpg" alt="旅行提示配图 07" loading="lazy">
                     <span>07</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-08.jpg" aria-label="放大查看第 8 张">
+                </button><button class="photo-card" data-src="assets/photo-08.jpg" aria-label="放大查看第 8 张">
                     <img src="assets/photo-08.jpg" alt="旅行提示配图 08" loading="lazy">
                     <span>08</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-09.jpg" aria-label="放大查看第 9 张">
+                </button><button class="photo-card" data-src="assets/photo-09.jpg" aria-label="放大查看第 9 张">
                     <img src="assets/photo-09.jpg" alt="旅行提示配图 09" loading="lazy">
                     <span>09</span>
                 </button><button class="photo-card" data-src="assets/photo-10.jpg" aria-label="放大查看第 10 张">
@@ -219,18 +209,11 @@
                     <span>10</span>
                 </button></div>
       </div>
-<p class="callout">👉 实际情况：</p>
-<p class="bullet"><span></span>台阶陡、路不好走</p>
-<p class="bullet"><span></span>很晒 + 很累</p>
-<p class="bullet"><span></span>有些点位有危险（如天神浴池）</p>
-<h3>✅ 额外建议</h3>
-<p class="bullet"><span></span>防滑运动鞋（很重要）</p>
-<p class="bullet"><span></span>墨镜（强光）</p>
-<p class="bullet"><span></span>小背包（不要背大包）</p>
-<p class="bullet"><span></span>手机防水袋（浮潜/海浪）</p>
-</section>
-<section class="section-card"><h2>🛕 四、寺庙 &amp; 乌布（文化场景）</h2>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+          <p class="callout">👉 实际情况：</p><p class="bullet"><span></span>台阶陡、路不好走</p><p class="bullet"><span></span>很晒 + 很累</p><p class="bullet"><span></span>有些点位有危险（如天神浴池）</p><h3>✅ 额外建议</h3><p class="bullet"><span></span>防滑运动鞋（很重要）</p><p class="bullet"><span></span>墨镜（强光）</p><p class="bullet"><span></span>小背包（不要背大包）</p><p class="bullet"><span></span>手机防水袋（浮潜/海浪）</p>
+        </section>
+<section class="section-card" id="temple">
+          <h2>🛕 四、寺庙 &amp; 乌布（文化场景）</h2>
+          <div class="section-gallery" aria-label="本节相关照片横向滑动区域">
         <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
         <div class="rail"><button class="photo-card" data-src="assets/photo-11.jpg" aria-label="放大查看第 11 张">
                     <img src="assets/photo-11.jpg" alt="旅行提示配图 11" loading="lazy">
@@ -238,199 +221,93 @@
                 </button><button class="photo-card" data-src="assets/photo-12.jpg" aria-label="放大查看第 12 张">
                     <img src="assets/photo-12.jpg" alt="旅行提示配图 12" loading="lazy">
                     <span>12</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-13.jpg" aria-label="放大查看第 13 张">
+                </button><button class="photo-card" data-src="assets/photo-13.jpg" aria-label="放大查看第 13 张">
                     <img src="assets/photo-13.jpg" alt="旅行提示配图 13" loading="lazy">
                     <span>13</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-14.jpg" aria-label="放大查看第 14 张">
+                </button><button class="photo-card" data-src="assets/photo-14.jpg" aria-label="放大查看第 14 张">
                     <img src="assets/photo-14.jpg" alt="旅行提示配图 14" loading="lazy">
                     <span>14</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-15.jpg" aria-label="放大查看第 15 张">
+                </button><button class="photo-card" data-src="assets/photo-15.jpg" aria-label="放大查看第 15 张">
                     <img src="assets/photo-15.jpg" alt="旅行提示配图 15" loading="lazy">
                     <span>15</span>
-                </button></div>
-      </div>
-<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
-        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-16.jpg" aria-label="放大查看第 16 张">
+                </button><button class="photo-card" data-src="assets/photo-16.jpg" aria-label="放大查看第 16 张">
                     <img src="assets/photo-16.jpg" alt="旅行提示配图 16" loading="lazy">
                     <span>16</span>
                 </button></div>
       </div>
-<p class="callout">👉 你会去很多寺庙，比如：</p>
-<p class="bullet"><span></span>圣泉寺</p>
-<p class="bullet"><span></span>海神庙</p>
-<p class="bullet"><span></span>👖 穿着要求</p>
-<p class="bullet"><span></span>不能穿短裤进入（或需要围纱笼）</p>
-<p class="callout">建议带：</p>
-<p class="bullet"><span></span>一条轻薄长裤 / 长裙</p>
-<p class="callout">👉 虽然现场可以租纱笼</p>
-<p class="bullet"><span></span>但自己带更干净、更方便</p>
-</section>
-<section class="section-card"><h2>🧴 五、物资清单（真正实用版）</h2>
-<h3>☀️ 防晒类（非常重要）</h3>
-<p class="bullet"><span></span>防晒霜（50+）</p>
-<p class="bullet"><span></span>墨镜</p>
-<p class="bullet"><span></span>帽子</p>
-<h3>🦟 防蚊类</h3>
-<p class="bullet"><span></span>驱蚊液（建议带）</p>
-<p class="callout">👉 有登革热风险（低概率但存在）</p>
-<h3>💊 常用药</h3>
-<p class="bullet"><span></span>止泻药（非常建议带）</p>
-<p class="bullet"><span></span>感冒药</p>
-<p class="bullet"><span></span>创可贴</p>
-<h3>🔌 数码类</h3>
-<p class="bullet"><span></span>转换插头（印尼是欧标）</p>
-<p class="bullet"><span></span>充电宝</p>
-<h3>💧 其他</h3>
-<p class="bullet"><span></span>折叠水壶（买矿泉水装）</p>
-<p class="bullet"><span></span>湿巾（很实用）</p>
-</section>
-<section class="section-card"><h2>🧭 六、一个“打包思路”（帮你避免带多）</h2>
-<p class="callout">你这趟可以按三类打包：</p>
-<h3>① 火山模块（一次性用）</h3>
-<p class="bullet"><span></span>外套</p>
-<p class="bullet"><span></span>长裤</p>
-<p class="bullet"><span></span>口罩</p>
-<p class="callout">👉 用完就基本不再用</p>
-<h3>② 海岛模块（主力）</h3>
-<p class="bullet"><span></span>短袖</p>
-<p class="bullet"><span></span>短裤</p>
-<p class="bullet"><span></span>泳衣</p>
-<p class="callout">👉 占80%时间</p>
-<h3>③ 文化模块（点缀）</h3>
-<p class="bullet"><span></span>一条长裤/长裙</p>
-<p class="callout">👉 用于寺庙</p>
-</section>
-<section class="section-card"><h2>⚠️ 七、几个容易忽略的小坑</h2>
-<p class="callout">👉 真实经验级提醒：</p>
-<p class="danger">❌ 不带外套 → 布罗莫直接崩</p>
-<p class="danger">❌ 不带运动鞋 → 佩妮达岛很难走</p>
-<p class="danger">❌ 防晒不够 → 一天晒伤</p>
-<p class="danger">❌ 行李带太多 → 每天搬行李很痛苦</p>
-<h3>✅ 最后帮你收一句</h3>
-<p class="callout">你这趟的核心不是“带很多”，而是：</p>
-<p class="callout">带对：一件外套 + 一双好鞋 + 防晒到位</p>
-<p>剩下的，其实都可以在 巴厘岛 解决。</p>
-<p class="bullet"><span></span>🎒 印尼7天极简行李清单（可直接照着装）</p>
-<p class="bullet"><span></span>这一版我帮你按“真正能落地执行的极简清单”来做——</p>
-<p>目标只有一个：一个20寸箱 + 一个随身背包，轻松搞定7天多场景行程。</p>
-</section>
-<section class="section-card"><h2>👕 一、衣物（核心：够用 + 可轮换）</h2>
-<p class="callout">👉 原则：3天一循环 + 可叠穿</p>
-<p class="bullet"><span></span>上衣</p>
-<p class="bullet"><span></span>速干T恤 × 3</p>
-<p class="bullet"><span></span>轻薄长袖（防晒/寺庙）× 1</p>
-<p class="bullet"><span></span>下装</p>
-<p class="bullet"><span></span>短裤 × 2</p>
-<p class="bullet"><span></span>轻薄长裤 × 1（寺庙+防晒+飞机）</p>
-<p class="bullet"><span></span>功能件（关键）</p>
-<p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣 × 1（布罗莫专用）</p>
-<p class="bullet"><span></span>泳衣 × 1</p>
-<p class="bullet"><span></span>内衣</p>
-<p class="bullet"><span></span>内裤 × 4–5</p>
-<p class="bullet"><span></span>袜子 × 2–3双</p>
-<p class="callout">👉 💡说明：</p>
-<p class="bullet"><span></span>可以洗衣（酒店/手洗），不用带7天量</p>
-<p class="bullet"><span></span>颜色尽量好搭，减少组合负担</p>
-</section>
-<section class="section-card"><h2>👟 二、鞋（不要多带！）</h2>
-<p class="callout">运动鞋 × 1（全程主力：火山+徒步）</p>
-<p class="bullet"><span></span>拖鞋 / 凉鞋 × 1（海岛+酒店）</p>
-<p class="callout">👉 ❗不要带第三双（90%用不上）</p>
-</section>
-<section class="section-card"><h2>🧥 三、火山“低温包”（单独思维）</h2>
-<p class="callout">👉 这套是“保命装备”：</p>
-<p class="bullet"><span></span>外套（上面已经带）</p>
-<p class="bullet"><span></span>长裤（已带）</p>
-<p class="bullet"><span></span>口罩 × 2</p>
-<p class="bullet"><span></span>头巾 / 围巾（可选）</p>
-<p class="callout">👉 用完可以收箱底，不占脑子</p>
-</section>
-<section class="section-card"><h2>🧴 四、洗护 &amp; 防护（小而精）</h2>
-<p class="bullet"><span></span>必带</p>
-<p class="bullet"><span></span>防晒霜（50+）</p>
-<p class="bullet"><span></span>驱蚊液</p>
-<p class="bullet"><span></span>牙刷牙膏（旅行装）</p>
-<p class="bullet"><span></span>小瓶洗发水/沐浴露（或直接用酒店）</p>
-<p class="bullet"><span></span>建议带</p>
-<p class="bullet"><span></span>护肤基础（简单就好）</p>
-<p class="bullet"><span></span>湿巾 × 1包</p>
-<p class="callout">👉 ❗不要带：</p>
-<p class="bullet"><span></span>大瓶洗护（酒店都有）</p>
-<p class="bullet"><span></span>复杂护肤全套（用不上）</p>
-</section>
-<section class="section-card"><h2>💊 五、药品（非常建议）</h2>
-<p class="bullet"><span></span>止泻药（重点）</p>
-<p class="bullet"><span></span>感冒药</p>
-<p class="bullet"><span></span>创可贴</p>
-<p class="callout">👉 💡这是“用不上最好，但一定要带”的类型</p>
-</section>
-<section class="section-card"><h2>🔌 六、数码 &amp; 证件</h2>
-<p class="bullet"><span></span>必带</p>
-<p class="bullet"><span></span>护照</p>
-<p class="bullet"><span></span>机票信息（电子即可）</p>
-<p class="bullet"><span></span>手机</p>
-<p class="bullet"><span></span>实用件</p>
-<p class="bullet"><span></span>充电宝</p>
-<p class="bullet"><span></span>欧标转换插头</p>
-<p class="bullet"><span></span>数据线（建议带2根）</p>
-</section>
-<section class="section-card"><h2>📶 七、网络（你刚刚已经确定）</h2>
-<p class="callout">👉 二选一：</p>
-<p class="bullet"><span></span>本地SIM卡（落地买）</p>
-<p class="bullet"><span></span>或eSIM（提前装好）</p>
-</section>
-<section class="section-card"><h2>🎒 八、随身背包（每天用）</h2>
-<p class="callout">👉 这个很关键，建议单独准备：</p>
-<p class="bullet"><span></span>放这些👇</p>
-<p class="bullet"><span></span>手机</p>
-<p class="bullet"><span></span>钱包</p>
-<p class="bullet"><span></span>防晒</p>
-<p class="bullet"><span></span>墨镜</p>
-<p class="bullet"><span></span>水</p>
-<p class="bullet"><span></span>少量现金</p>
-<p class="bullet"><span></span>充电宝</p>
-<p class="callout">👉 💡佩妮达岛、乌布都会用到</p>
-</section>
-<section class="section-card"><h2>⚖️ 九、一个“装箱结构”（帮你更省力）</h2>
-<p class="callout">👉 你可以这样分：</p>
-<p class="bullet"><span></span>行李箱（20寸）</p>
-<p class="bullet"><span></span>所有衣物</p>
-<p class="bullet"><span></span>洗护</p>
-<p class="bullet"><span></span>药品</p>
-<p class="bullet"><span></span>背包（随身）</p>
-<p class="bullet"><span></span>证件</p>
-<p class="bullet"><span></span>手机</p>
-<p class="bullet"><span></span>钱包</p>
-<p class="bullet"><span></span>一套备用衣物（以防延误）</p>
-</section>
-<section class="section-card"><h2>❌ 十、极简原则（帮你避免带多）</h2>
-<p class="callout">👉 出发前自检三句话：</p>
-<p>这件衣服能不能至少穿2次？</p>
-<p>这个东西在当地能不能买到？</p>
-<p>我真的会用它吗？</p>
-<p>只要有一个答案是“否”，就可以不带。</p>
-<h3>✅ 最后帮你收一下（非常关键）</h3>
-<p class="callout">你这趟最重要的不是带多，而是带对三样：</p>
-<p class="callout">👉 一件外套（火山）</p>
-<p class="callout">👉 一双好走的鞋（佩妮达）</p>
-<p class="callout">👉 一套防晒（巴厘岛）</p>
-<p>其他都是加分项。</p>
-<p class="callout">如果你愿意，我可以帮你再升级一版：</p>
-<p>👉 “每天穿什么”的搭配方案（按你行程逐天安排），可以做到几乎不用思考，直接拿衣服穿。</p>
-</section>
+          <p class="callout">👉 你会去很多寺庙，比如：</p><p class="bullet"><span></span>圣泉寺</p><p class="bullet"><span></span>海神庙</p><p class="bullet"><span></span>👖 穿着要求</p><p class="bullet"><span></span>不能穿短裤进入（或需要围纱笼）</p><p class="callout">建议带：</p><p class="bullet"><span></span>一条轻薄长裤 / 长裙</p><p class="callout">👉 虽然现场可以租纱笼</p><p class="bullet"><span></span>但自己带更干净、更方便</p>
+        </section>
+<section class="section-card" id="supplies">
+          <h2>🧴 五、物资清单（真正实用版）</h2>
+          
+          <h3>☀️ 防晒类（非常重要）</h3><p class="bullet"><span></span>防晒霜（50+）</p><p class="bullet"><span></span>墨镜</p><p class="bullet"><span></span>帽子</p><h3>🦟 防蚊类</h3><p class="bullet"><span></span>驱蚊液（建议带）</p><p class="callout">👉 有登革热风险（低概率但存在）</p><h3>💊 常用药</h3><p class="bullet"><span></span>止泻药（非常建议带）</p><p class="bullet"><span></span>感冒药</p><p class="bullet"><span></span>创可贴</p><h3>🔌 数码类</h3><p class="bullet"><span></span>转换插头（印尼是欧标）</p><p class="bullet"><span></span>充电宝</p><h3>💧 其他</h3><p class="bullet"><span></span>折叠水壶（买矿泉水装）</p><p class="bullet"><span></span>湿巾（很实用）</p>
+        </section>
+<section class="section-card" id="section-7">
+          <h2>🧭 六、一个“打包思路”（帮你避免带多）</h2>
+          
+          <p class="callout">你这趟可以按三类打包：</p><h3>① 火山模块（一次性用）</h3><p class="bullet"><span></span>外套</p><p class="bullet"><span></span>长裤</p><p class="bullet"><span></span>口罩</p><p class="callout">👉 用完就基本不再用</p><h3>② 海岛模块（主力）</h3><p class="bullet"><span></span>短袖</p><p class="bullet"><span></span>短裤</p><p class="bullet"><span></span>泳衣</p><p class="callout">👉 占80%时间</p><h3>③ 文化模块（点缀）</h3><p class="bullet"><span></span>一条长裤/长裙</p><p class="callout">👉 用于寺庙</p>
+        </section>
+<section class="section-card" id="pitfalls">
+          <h2>⚠️ 七、几个容易忽略的小坑</h2>
+          
+          <p class="callout">👉 真实经验级提醒：</p><p class="danger">❌ 不带外套 → 布罗莫直接崩</p><p class="danger">❌ 不带运动鞋 → 佩妮达岛很难走</p><p class="danger">❌ 防晒不够 → 一天晒伤</p><p class="danger">❌ 行李带太多 → 每天搬行李很痛苦</p><h3>✅ 最后帮你收一句</h3><p class="callout">你这趟的核心不是“带很多”，而是：</p><p class="callout">带对：一件外套 + 一双好鞋 + 防晒到位</p><p>剩下的，其实都可以在 巴厘岛 解决。</p>
+        </section>
+<section class="part-divider" id="packing-list">
+              <div class="part-kicker">第二部分</div>
+              <div class="part-rule"></div>
+              <h2>🎒 印尼7天极简行李清单（可直接照着装）</h2>
+              <p class="bullet"><span></span>这一版我帮你按“真正能落地执行的极简清单”来做——</p><p>目标只有一个：一个20寸箱 + 一个随身背包，轻松搞定7天多场景行程。</p>
+            </section>
+<section class="section-card" id="section-10">
+          <h2>👕 一、衣物（核心：够用 + 可轮换）</h2>
+          
+          <p class="callout">👉 原则：3天一循环 + 可叠穿</p><p class="bullet"><span></span>上衣</p><p class="bullet"><span></span>速干T恤 × 3</p><p class="bullet"><span></span>轻薄长袖（防晒/寺庙）× 1</p><p class="bullet"><span></span>下装</p><p class="bullet"><span></span>短裤 × 2</p><p class="bullet"><span></span>轻薄长裤 × 1（寺庙+防晒+飞机）</p><p class="bullet"><span></span>功能件（关键）</p><p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣 × 1（布罗莫专用）</p><p class="bullet"><span></span>泳衣 × 1</p><p class="bullet"><span></span>内衣</p><p class="bullet"><span></span>内裤 × 4–5</p><p class="bullet"><span></span>袜子 × 2–3双</p><p class="callout">👉 💡说明：</p><p class="bullet"><span></span>可以洗衣（酒店/手洗），不用带7天量</p><p class="bullet"><span></span>颜色尽量好搭，减少组合负担</p>
+        </section>
+<section class="section-card" id="section-11">
+          <h2>👟 二、鞋（不要多带！）</h2>
+          
+          <p class="callout">运动鞋 × 1（全程主力：火山+徒步）</p><p class="bullet"><span></span>拖鞋 / 凉鞋 × 1（海岛+酒店）</p><p class="callout">👉 ❗不要带第三双（90%用不上）</p>
+        </section>
+<section class="section-card" id="section-12">
+          <h2>🧥 三、火山“低温包”（单独思维）</h2>
+          
+          <p class="callout">👉 这套是“保命装备”：</p><p class="bullet"><span></span>外套（上面已经带）</p><p class="bullet"><span></span>长裤（已带）</p><p class="bullet"><span></span>口罩 × 2</p><p class="bullet"><span></span>头巾 / 围巾（可选）</p><p class="callout">👉 用完可以收箱底，不占脑子</p>
+        </section>
+<section class="section-card" id="section-13">
+          <h2>🧴 四、洗护 &amp; 防护（小而精）</h2>
+          
+          <p class="bullet"><span></span>必带</p><p class="bullet"><span></span>防晒霜（50+）</p><p class="bullet"><span></span>驱蚊液</p><p class="bullet"><span></span>牙刷牙膏（旅行装）</p><p class="bullet"><span></span>小瓶洗发水/沐浴露（或直接用酒店）</p><p class="bullet"><span></span>建议带</p><p class="bullet"><span></span>护肤基础（简单就好）</p><p class="bullet"><span></span>湿巾 × 1包</p><p class="callout">👉 ❗不要带：</p><p class="bullet"><span></span>大瓶洗护（酒店都有）</p><p class="bullet"><span></span>复杂护肤全套（用不上）</p>
+        </section>
+<section class="section-card" id="section-14">
+          <h2>💊 五、药品（非常建议）</h2>
+          
+          <p class="bullet"><span></span>止泻药（重点）</p><p class="bullet"><span></span>感冒药</p><p class="bullet"><span></span>创可贴</p><p class="callout">👉 💡这是“用不上最好，但一定要带”的类型</p>
+        </section>
+<section class="section-card" id="section-15">
+          <h2>🔌 六、数码 &amp; 证件</h2>
+          
+          <p class="bullet"><span></span>必带</p><p class="bullet"><span></span>护照</p><p class="bullet"><span></span>机票信息（电子即可）</p><p class="bullet"><span></span>手机</p><p class="bullet"><span></span>实用件</p><p class="bullet"><span></span>充电宝</p><p class="bullet"><span></span>欧标转换插头</p><p class="bullet"><span></span>数据线（建议带2根）</p>
+        </section>
+<section class="section-card" id="section-16">
+          <h2>📶 七、网络（你刚刚已经确定）</h2>
+          
+          <p class="callout">👉 二选一：</p><p class="bullet"><span></span>本地SIM卡（落地买）</p><p class="bullet"><span></span>或eSIM（提前装好）</p>
+        </section>
+<section class="section-card" id="section-17">
+          <h2>🎒 八、随身背包（每天用）</h2>
+          
+          <p class="callout">👉 这个很关键，建议单独准备：</p><p class="bullet"><span></span>放这些👇</p><p class="bullet"><span></span>手机</p><p class="bullet"><span></span>钱包</p><p class="bullet"><span></span>防晒</p><p class="bullet"><span></span>墨镜</p><p class="bullet"><span></span>水</p><p class="bullet"><span></span>少量现金</p><p class="bullet"><span></span>充电宝</p><p class="callout">👉 💡佩妮达岛、乌布都会用到</p>
+        </section>
+<section class="section-card" id="section-18">
+          <h2>⚖️ 九、一个“装箱结构”（帮你更省力）</h2>
+          
+          <p class="callout">👉 你可以这样分：</p><p class="bullet"><span></span>行李箱（20寸）</p><p class="bullet"><span></span>所有衣物</p><p class="bullet"><span></span>洗护</p><p class="bullet"><span></span>药品</p><p class="bullet"><span></span>背包（随身）</p><p class="bullet"><span></span>证件</p><p class="bullet"><span></span>手机</p><p class="bullet"><span></span>钱包</p><p class="bullet"><span></span>一套备用衣物（以防延误）</p>
+        </section>
+<section class="section-card" id="section-19">
+          <h2>❌ 十、极简原则（帮你避免带多）</h2>
+          
+          <p class="callout">👉 出发前自检三句话：</p><p>这件衣服能不能至少穿2次？</p><p>这个东西在当地能不能买到？</p><p>我真的会用它吗？</p><p>只要有一个答案是“否”，就可以不带。</p><h3>✅ 最后帮你收一下（非常关键）</h3><p class="callout">你这趟最重要的不是带多，而是带对三样：</p><p class="callout">👉 一件外套（火山）</p><p class="callout">👉 一双好走的鞋（佩妮达）</p><p class="callout">👉 一套防晒（巴厘岛）</p><p>其他都是加分项。</p>
+        </section>
     </main>
     <footer>由《旅行物资提示——按行程.docx》整理生成。建议出发前再次核对航班、酒店、天气与当地政策。</footer>
   </div>
@@ -439,9 +316,6 @@
     <img alt="放大的旅行照片">
   </div>
   <script>
-    const sections = [...document.querySelectorAll('.section-card h2')];
-    const ids = ['bromo','island','penida','temple','packing','pitfalls'];
-    sections.forEach((h, i) => { if (ids[i]) h.parentElement.id = ids[i]; });
     const box = document.getElementById('lightbox');
     const boxImg = box.querySelector('img');
     document.querySelectorAll('.photo-card').forEach(btn => {
