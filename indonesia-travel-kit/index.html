@@ -48,35 +48,6 @@
       color: var(--brand-dark);
     }
     .subtitle { margin: 0; color: var(--muted); font-size: 15px; }
-    .top-gallery {
-      margin-top: 18px;
-      border: 1px solid rgba(14,95,105,.16);
-      background: rgba(255,255,255,.54);
-      border-radius: 22px;
-      padding: 10px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-    .gallery-title {
-      display: flex; justify-content: space-between; align-items: center;
-      margin: 0 2px 8px; color: var(--muted); font-size: 12px;
-    }
-    .rail {
-      display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
-      padding-bottom: 4px; -webkit-overflow-scrolling: touch;
-    }
-    .rail::-webkit-scrollbar { height: 0; }
-    .photo-card {
-      flex: 0 0 66%; max-width: 260px; height: 138px;
-      border: 0; padding: 0; border-radius: 16px; overflow: hidden; position: relative;
-      background: var(--sea); scroll-snap-align: start; box-shadow: 0 7px 18px rgba(5,42,48,.16);
-      cursor: zoom-in;
-    }
-    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(1.04) contrast(1.02); }
-    .photo-card span {
-      position: absolute; left: 8px; bottom: 7px; padding: 3px 8px; border-radius: 999px;
-      background: rgba(8,61,68,.72); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .05em;
-    }
     .quick-nav {
       display: flex; gap: 8px; overflow-x: auto; padding: 8px 18px 4px; position: sticky; top: 0;
       z-index: 20; background: rgba(251,247,239,.86); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(31,42,46,.08);
@@ -94,6 +65,34 @@
     h2 { margin: 0 0 12px; color: var(--brand-dark); font-size: 22px; line-height: 1.22; letter-spacing: -.035em; }
     h3 { margin: 17px 0 7px; color: #7c4b13; font-size: 17px; line-height: 1.35; }
     p { margin: 8px 0; font-size: 16px; }
+    .section-gallery {
+      margin: 10px 0 14px;
+      border: 1px solid rgba(14,95,105,.14);
+      background: rgba(255,255,255,.50);
+      border-radius: 18px;
+      padding: 8px;
+      box-shadow: 0 8px 18px rgba(24,43,48,.08);
+    }
+    .gallery-title {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 0 2px 7px; color: var(--muted); font-size: 12px;
+    }
+    .rail {
+      display: flex; gap: 9px; overflow-x: auto; scroll-snap-type: x mandatory;
+      padding-bottom: 2px; -webkit-overflow-scrolling: touch;
+    }
+    .rail::-webkit-scrollbar { height: 0; }
+    .photo-card {
+      flex: 0 0 62%; max-width: 232px; height: 124px;
+      border: 0; padding: 0; border-radius: 14px; overflow: hidden; position: relative;
+      background: var(--sea); scroll-snap-align: start; box-shadow: 0 6px 14px rgba(5,42,48,.14);
+      cursor: zoom-in;
+    }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(1.04) contrast(1.02); }
+    .photo-card span {
+      position: absolute; left: 8px; bottom: 7px; padding: 3px 8px; border-radius: 999px;
+      background: rgba(8,61,68,.72); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+    }
     .callout {
       padding: 11px 12px; border-radius: 16px; background: linear-gradient(135deg, rgba(203,232,232,.75), rgba(243,230,209,.85));
       border: 1px solid rgba(14,95,105,.14); color: var(--brand-dark); font-weight: 700;
@@ -118,7 +117,7 @@
     }
     @media (min-width: 640px) {
       header.hero { padding-top: 36px; }
-      .photo-card { flex-basis: 210px; height: 132px; }
+      .photo-card { flex-basis: 210px; height: 128px; }
       main { padding-inline: 18px; }
       .section-card { padding: 22px; }
     }
@@ -130,73 +129,6 @@
       <div class="eyebrow">Indonesia travel kit</div>
       <h1>印尼旅行物资提示</h1>
       <p class="subtitle">按行程整理｜布罗莫 · 巴厘岛 · 佩妮达 · 乌布</p>
-      <div class="top-gallery" aria-label="旅行照片横向滑动区域">
-        <div class="gallery-title"><strong>照片速览</strong><span>横向滑动 · 点击放大</span></div>
-        <div class="rail"><button class="photo-card" data-src="assets/photo-01.jpg" aria-label="放大查看第 1 张照片">
-                    <img src="assets/photo-01.jpg" alt="旅行提示配图 1" loading="lazy">
-                    <span>01</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-02.jpg" aria-label="放大查看第 2 张照片">
-                    <img src="assets/photo-02.jpg" alt="旅行提示配图 2" loading="lazy">
-                    <span>02</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-03.jpg" aria-label="放大查看第 3 张照片">
-                    <img src="assets/photo-03.jpg" alt="旅行提示配图 3" loading="lazy">
-                    <span>03</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-04.jpg" aria-label="放大查看第 4 张照片">
-                    <img src="assets/photo-04.jpg" alt="旅行提示配图 4" loading="lazy">
-                    <span>04</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-05.jpg" aria-label="放大查看第 5 张照片">
-                    <img src="assets/photo-05.jpg" alt="旅行提示配图 5" loading="lazy">
-                    <span>05</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-06.jpg" aria-label="放大查看第 6 张照片">
-                    <img src="assets/photo-06.jpg" alt="旅行提示配图 6" loading="lazy">
-                    <span>06</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-07.jpg" aria-label="放大查看第 7 张照片">
-                    <img src="assets/photo-07.jpg" alt="旅行提示配图 7" loading="lazy">
-                    <span>07</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-08.jpg" aria-label="放大查看第 8 张照片">
-                    <img src="assets/photo-08.jpg" alt="旅行提示配图 8" loading="lazy">
-                    <span>08</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-09.jpg" aria-label="放大查看第 9 张照片">
-                    <img src="assets/photo-09.jpg" alt="旅行提示配图 9" loading="lazy">
-                    <span>09</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-10.jpg" aria-label="放大查看第 10 张照片">
-                    <img src="assets/photo-10.jpg" alt="旅行提示配图 10" loading="lazy">
-                    <span>10</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-11.jpg" aria-label="放大查看第 11 张照片">
-                    <img src="assets/photo-11.jpg" alt="旅行提示配图 11" loading="lazy">
-                    <span>11</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-12.jpg" aria-label="放大查看第 12 张照片">
-                    <img src="assets/photo-12.jpg" alt="旅行提示配图 12" loading="lazy">
-                    <span>12</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-13.jpg" aria-label="放大查看第 13 张照片">
-                    <img src="assets/photo-13.jpg" alt="旅行提示配图 13" loading="lazy">
-                    <span>13</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-14.jpg" aria-label="放大查看第 14 张照片">
-                    <img src="assets/photo-14.jpg" alt="旅行提示配图 14" loading="lazy">
-                    <span>14</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-15.jpg" aria-label="放大查看第 15 张照片">
-                    <img src="assets/photo-15.jpg" alt="旅行提示配图 15" loading="lazy">
-                    <span>15</span>
-                </button>
-<button class="photo-card" data-src="assets/photo-16.jpg" aria-label="放大查看第 16 张照片">
-                    <img src="assets/photo-16.jpg" alt="旅行提示配图 16" loading="lazy">
-                    <span>16</span>
-                </button></div>
-      </div>
     </header>
     <nav class="quick-nav" aria-label="页面快捷导航">
       <a href="#bromo">火山</a><a href="#island">海岛</a><a href="#penida">佩妮达</a><a href="#temple">寺庙</a><a href="#packing">清单</a><a href="#pitfalls">避坑</a>
@@ -208,6 +140,16 @@
 <p class="bullet"><span></span>同一趟行程，会经历“很热 + 很晒 + 很湿 + 很冷 + 很早起”</p>
 <p>我帮你按“真实使用场景”来拆一份准备清单（尽量避免带一堆没用的东西）。</p>
 <section class="section-card"><h2>🌋 一、先看一个关键场景：布罗莫火山（日出=最冷）</h2>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-01.jpg" aria-label="放大查看第 1 张">
+                    <img src="assets/photo-01.jpg" alt="旅行提示配图 01" loading="lazy">
+                    <span>01</span>
+                </button><button class="photo-card" data-src="assets/photo-02.jpg" aria-label="放大查看第 2 张">
+                    <img src="assets/photo-02.jpg" alt="旅行提示配图 02" loading="lazy">
+                    <span>02</span>
+                </button></div>
+      </div>
 <p class="callout">👉 这是全程最容易“翻车”的地方：</p>
 <p class="callout">时间：凌晨2–3点出发</p>
 <p class="callout">温度：5–10°C（体感更低）</p>
@@ -221,6 +163,23 @@
 <p class="callout">👉 很多人在这里：穿着短袖去 → 冻到怀疑人生</p>
 </section>
 <section class="section-card"><h2>🏝 二、巴厘岛 &amp; 佩妮达岛（日常=热+晒+湿）</h2>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-03.jpg" aria-label="放大查看第 3 张">
+                    <img src="assets/photo-03.jpg" alt="旅行提示配图 03" loading="lazy">
+                    <span>03</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-04.jpg" aria-label="放大查看第 4 张">
+                    <img src="assets/photo-04.jpg" alt="旅行提示配图 04" loading="lazy">
+                    <span>04</span>
+                </button><button class="photo-card" data-src="assets/photo-05.jpg" aria-label="放大查看第 5 张">
+                    <img src="assets/photo-05.jpg" alt="旅行提示配图 05" loading="lazy">
+                    <span>05</span>
+                </button></div>
+      </div>
 <p class="callout">👉 这里的关键词只有三个：暴晒 + 紫外线强 + 湿热</p>
 <h3>👕 衣物建议</h3>
 <p class="bullet"><span></span>速干T恤 × 3–5件</p>
@@ -233,6 +192,33 @@
 <p class="bullet"><span></span>这里是“功能性优先”</p>
 </section>
 <section class="section-card"><h2>🌊 三、佩妮达岛（重点提醒：不只是“美景”，还有“强度”）</h2>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-06.jpg" aria-label="放大查看第 6 张">
+                    <img src="assets/photo-06.jpg" alt="旅行提示配图 06" loading="lazy">
+                    <span>06</span>
+                </button><button class="photo-card" data-src="assets/photo-07.jpg" aria-label="放大查看第 7 张">
+                    <img src="assets/photo-07.jpg" alt="旅行提示配图 07" loading="lazy">
+                    <span>07</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-08.jpg" aria-label="放大查看第 8 张">
+                    <img src="assets/photo-08.jpg" alt="旅行提示配图 08" loading="lazy">
+                    <span>08</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-09.jpg" aria-label="放大查看第 9 张">
+                    <img src="assets/photo-09.jpg" alt="旅行提示配图 09" loading="lazy">
+                    <span>09</span>
+                </button><button class="photo-card" data-src="assets/photo-10.jpg" aria-label="放大查看第 10 张">
+                    <img src="assets/photo-10.jpg" alt="旅行提示配图 10" loading="lazy">
+                    <span>10</span>
+                </button></div>
+      </div>
 <p class="callout">👉 实际情况：</p>
 <p class="bullet"><span></span>台阶陡、路不好走</p>
 <p class="bullet"><span></span>很晒 + 很累</p>
@@ -244,6 +230,44 @@
 <p class="bullet"><span></span>手机防水袋（浮潜/海浪）</p>
 </section>
 <section class="section-card"><h2>🛕 四、寺庙 &amp; 乌布（文化场景）</h2>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-11.jpg" aria-label="放大查看第 11 张">
+                    <img src="assets/photo-11.jpg" alt="旅行提示配图 11" loading="lazy">
+                    <span>11</span>
+                </button><button class="photo-card" data-src="assets/photo-12.jpg" aria-label="放大查看第 12 张">
+                    <img src="assets/photo-12.jpg" alt="旅行提示配图 12" loading="lazy">
+                    <span>12</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-13.jpg" aria-label="放大查看第 13 张">
+                    <img src="assets/photo-13.jpg" alt="旅行提示配图 13" loading="lazy">
+                    <span>13</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-14.jpg" aria-label="放大查看第 14 张">
+                    <img src="assets/photo-14.jpg" alt="旅行提示配图 14" loading="lazy">
+                    <span>14</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-15.jpg" aria-label="放大查看第 15 张">
+                    <img src="assets/photo-15.jpg" alt="旅行提示配图 15" loading="lazy">
+                    <span>15</span>
+                </button></div>
+      </div>
+<div class="section-gallery" aria-label="本节相关照片横向滑动区域">
+        <div class="gallery-title"><strong>本节照片</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-16.jpg" aria-label="放大查看第 16 张">
+                    <img src="assets/photo-16.jpg" alt="旅行提示配图 16" loading="lazy">
+                    <span>16</span>
+                </button></div>
+      </div>
 <p class="callout">👉 你会去很多寺庙，比如：</p>
 <p class="bullet"><span></span>圣泉寺</p>
 <p class="bullet"><span></span>海神庙</p>
