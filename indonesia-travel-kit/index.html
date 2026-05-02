@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>印尼旅行物资提示</title>
+  <meta name="description" content="印尼行程旅行物资提示，适合手机阅读的网页版。">
+  <style>
+    :root {
+      --paper: #fbf7ef;
+      --ink: #1f2a2e;
+      --muted: #667579;
+      --line: rgba(31, 42, 46, .12);
+      --brand: #0e5f69;
+      --brand-dark: #083d44;
+      --sun: #e89c41;
+      --sand: #f3e6d1;
+      --sea: #cbe8e8;
+      --danger: #b3412d;
+      --shadow: 0 14px 38px rgba(24, 43, 48, .11);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -10%, rgba(232,156,65,.28), transparent 28rem),
+        radial-gradient(circle at 92% 4%, rgba(14,95,105,.20), transparent 24rem),
+        linear-gradient(180deg, #fff8ec 0%, var(--paper) 34%, #f8f2e7 100%);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { width: min(100%, 760px); margin: 0 auto; }
+    header.hero { padding: 24px 18px 12px; position: relative; overflow: hidden; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--brand-dark); font-weight: 700; font-size: 12px; letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 20px; height: 2px; background: var(--sun); border-radius: 99px; }
+    h1 {
+      margin: 9px 0 8px;
+      font-size: clamp(30px, 9vw, 48px);
+      line-height: 1.04;
+      letter-spacing: -.06em;
+      color: var(--brand-dark);
+    }
+    .subtitle { margin: 0; color: var(--muted); font-size: 15px; }
+    .top-gallery {
+      margin-top: 18px;
+      border: 1px solid rgba(14,95,105,.16);
+      background: rgba(255,255,255,.54);
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .gallery-title {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 0 2px 8px; color: var(--muted); font-size: 12px;
+    }
+    .rail {
+      display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+      padding-bottom: 4px; -webkit-overflow-scrolling: touch;
+    }
+    .rail::-webkit-scrollbar { height: 0; }
+    .photo-card {
+      flex: 0 0 66%; max-width: 260px; height: 138px;
+      border: 0; padding: 0; border-radius: 16px; overflow: hidden; position: relative;
+      background: var(--sea); scroll-snap-align: start; box-shadow: 0 7px 18px rgba(5,42,48,.16);
+      cursor: zoom-in;
+    }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(1.04) contrast(1.02); }
+    .photo-card span {
+      position: absolute; left: 8px; bottom: 7px; padding: 3px 8px; border-radius: 999px;
+      background: rgba(8,61,68,.72); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+    }
+    .quick-nav {
+      display: flex; gap: 8px; overflow-x: auto; padding: 8px 18px 4px; position: sticky; top: 0;
+      z-index: 20; background: rgba(251,247,239,.86); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(31,42,46,.08);
+    }
+    .quick-nav a {
+      white-space: nowrap; color: var(--brand-dark); background: #fff; border: 1px solid var(--line);
+      text-decoration: none; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    main { padding: 10px 14px 50px; }
+    .section-card {
+      margin: 14px 0; padding: 17px 16px 16px;
+      border-radius: 24px; background: rgba(255, 253, 248, .82); box-shadow: 0 10px 28px rgba(28, 44, 48, .08);
+      border: 1px solid rgba(31,42,46,.10);
+    }
+    h2 { margin: 0 0 12px; color: var(--brand-dark); font-size: 22px; line-height: 1.22; letter-spacing: -.035em; }
+    h3 { margin: 17px 0 7px; color: #7c4b13; font-size: 17px; line-height: 1.35; }
+    p { margin: 8px 0; font-size: 16px; }
+    .callout {
+      padding: 11px 12px; border-radius: 16px; background: linear-gradient(135deg, rgba(203,232,232,.75), rgba(243,230,209,.85));
+      border: 1px solid rgba(14,95,105,.14); color: var(--brand-dark); font-weight: 700;
+    }
+    .danger {
+      padding: 9px 11px; border-radius: 14px; background: rgba(179,65,45,.08); color: var(--danger);
+      border-left: 4px solid var(--danger); font-weight: 700;
+    }
+    .bullet { display: grid; grid-template-columns: 14px 1fr; gap: 7px; align-items: start; margin: 6px 0; }
+    .bullet span { width: 7px; height: 7px; margin-top: 11px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 4px rgba(232,156,65,.16); }
+    footer { padding: 22px 18px 42px; color: var(--muted); font-size: 12px; text-align: center; }
+    .lightbox {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 80;
+      background: rgba(7, 22, 26, .86); padding: 18px;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 82vh; border-radius: 18px; box-shadow: 0 28px 80px rgba(0,0,0,.45); }
+    .lightbox button {
+      position: fixed; right: 16px; top: calc(16px + env(safe-area-inset-top));
+      border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.16); color: white;
+      width: 42px; height: 42px; border-radius: 999px; font-size: 24px; line-height: 1; backdrop-filter: blur(12px);
+    }
+    @media (min-width: 640px) {
+      header.hero { padding-top: 36px; }
+      .photo-card { flex-basis: 210px; height: 132px; }
+      main { padding-inline: 18px; }
+      .section-card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div class="eyebrow">Indonesia travel kit</div>
+      <h1>印尼旅行物资提示</h1>
+      <p class="subtitle">按行程整理｜布罗莫 · 巴厘岛 · 佩妮达 · 乌布</p>
+      <div class="top-gallery" aria-label="旅行照片横向滑动区域">
+        <div class="gallery-title"><strong>照片速览</strong><span>横向滑动 · 点击放大</span></div>
+        <div class="rail"><button class="photo-card" data-src="assets/photo-01.jpg" aria-label="放大查看第 1 张照片">
+                    <img src="assets/photo-01.jpg" alt="旅行提示配图 1" loading="lazy">
+                    <span>01</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-02.jpg" aria-label="放大查看第 2 张照片">
+                    <img src="assets/photo-02.jpg" alt="旅行提示配图 2" loading="lazy">
+                    <span>02</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-03.jpg" aria-label="放大查看第 3 张照片">
+                    <img src="assets/photo-03.jpg" alt="旅行提示配图 3" loading="lazy">
+                    <span>03</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-04.jpg" aria-label="放大查看第 4 张照片">
+                    <img src="assets/photo-04.jpg" alt="旅行提示配图 4" loading="lazy">
+                    <span>04</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-05.jpg" aria-label="放大查看第 5 张照片">
+                    <img src="assets/photo-05.jpg" alt="旅行提示配图 5" loading="lazy">
+                    <span>05</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-06.jpg" aria-label="放大查看第 6 张照片">
+                    <img src="assets/photo-06.jpg" alt="旅行提示配图 6" loading="lazy">
+                    <span>06</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-07.jpg" aria-label="放大查看第 7 张照片">
+                    <img src="assets/photo-07.jpg" alt="旅行提示配图 7" loading="lazy">
+                    <span>07</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-08.jpg" aria-label="放大查看第 8 张照片">
+                    <img src="assets/photo-08.jpg" alt="旅行提示配图 8" loading="lazy">
+                    <span>08</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-09.jpg" aria-label="放大查看第 9 张照片">
+                    <img src="assets/photo-09.jpg" alt="旅行提示配图 9" loading="lazy">
+                    <span>09</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-10.jpg" aria-label="放大查看第 10 张照片">
+                    <img src="assets/photo-10.jpg" alt="旅行提示配图 10" loading="lazy">
+                    <span>10</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-11.jpg" aria-label="放大查看第 11 张照片">
+                    <img src="assets/photo-11.jpg" alt="旅行提示配图 11" loading="lazy">
+                    <span>11</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-12.jpg" aria-label="放大查看第 12 张照片">
+                    <img src="assets/photo-12.jpg" alt="旅行提示配图 12" loading="lazy">
+                    <span>12</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-13.jpg" aria-label="放大查看第 13 张照片">
+                    <img src="assets/photo-13.jpg" alt="旅行提示配图 13" loading="lazy">
+                    <span>13</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-14.jpg" aria-label="放大查看第 14 张照片">
+                    <img src="assets/photo-14.jpg" alt="旅行提示配图 14" loading="lazy">
+                    <span>14</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-15.jpg" aria-label="放大查看第 15 张照片">
+                    <img src="assets/photo-15.jpg" alt="旅行提示配图 15" loading="lazy">
+                    <span>15</span>
+                </button>
+<button class="photo-card" data-src="assets/photo-16.jpg" aria-label="放大查看第 16 张照片">
+                    <img src="assets/photo-16.jpg" alt="旅行提示配图 16" loading="lazy">
+                    <span>16</span>
+                </button></div>
+      </div>
+    </header>
+    <nav class="quick-nav" aria-label="页面快捷导航">
+      <a href="#bromo">火山</a><a href="#island">海岛</a><a href="#penida">佩妮达</a><a href="#temple">寺庙</a><a href="#packing">清单</a><a href="#pitfalls">避坑</a>
+    </nav>
+    <main>
+      <p class="callout">你这条线路其实很典型，但有一个很多人会低估的点：</p>
+<p>👉 它不是“一个热带海岛旅行”，而是“海岛 + 火山 + 海上 + 丛林 + 日出作息”的组合</p>
+<p class="callout">也就是说：</p>
+<p class="bullet"><span></span>同一趟行程，会经历“很热 + 很晒 + 很湿 + 很冷 + 很早起”</p>
+<p>我帮你按“真实使用场景”来拆一份准备清单（尽量避免带一堆没用的东西）。</p>
+<section class="section-card"><h2>🌋 一、先看一个关键场景：布罗莫火山（日出=最冷）</h2>
+<p class="callout">👉 这是全程最容易“翻车”的地方：</p>
+<p class="callout">时间：凌晨2–3点出发</p>
+<p class="callout">温度：5–10°C（体感更低）</p>
+<p class="bullet"><span></span>风大 + 火山灰</p>
+<h3>✅ 必带（重点）</h3>
+<p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣（一定要）</p>
+<p class="bullet"><span></span>长裤（不要短裤去）</p>
+<p class="bullet"><span></span>运动鞋（防灰、防滑）</p>
+<p class="bullet"><span></span>口罩（防火山灰）</p>
+<p class="bullet"><span></span>围巾或头巾（挡风）</p>
+<p class="callout">👉 很多人在这里：穿着短袖去 → 冻到怀疑人生</p>
+</section>
+<section class="section-card"><h2>🏝 二、巴厘岛 &amp; 佩妮达岛（日常=热+晒+湿）</h2>
+<p class="callout">👉 这里的关键词只有三个：暴晒 + 紫外线强 + 湿热</p>
+<h3>👕 衣物建议</h3>
+<p class="bullet"><span></span>速干T恤 × 3–5件</p>
+<p class="bullet"><span></span>短裤 × 2–3条</p>
+<p class="bullet"><span></span>泳衣 × 1–2套</p>
+<p class="bullet"><span></span>防晒外套（很有用）</p>
+<p class="bullet"><span></span>拖鞋 + 运动鞋各一双</p>
+<p class="callout">👉 小建议：</p>
+<p class="bullet"><span></span>不用带太多“好看但不透气”的衣服</p>
+<p class="bullet"><span></span>这里是“功能性优先”</p>
+</section>
+<section class="section-card"><h2>🌊 三、佩妮达岛（重点提醒：不只是“美景”，还有“强度”）</h2>
+<p class="callout">👉 实际情况：</p>
+<p class="bullet"><span></span>台阶陡、路不好走</p>
+<p class="bullet"><span></span>很晒 + 很累</p>
+<p class="bullet"><span></span>有些点位有危险（如天神浴池）</p>
+<h3>✅ 额外建议</h3>
+<p class="bullet"><span></span>防滑运动鞋（很重要）</p>
+<p class="bullet"><span></span>墨镜（强光）</p>
+<p class="bullet"><span></span>小背包（不要背大包）</p>
+<p class="bullet"><span></span>手机防水袋（浮潜/海浪）</p>
+</section>
+<section class="section-card"><h2>🛕 四、寺庙 &amp; 乌布（文化场景）</h2>
+<p class="callout">👉 你会去很多寺庙，比如：</p>
+<p class="bullet"><span></span>圣泉寺</p>
+<p class="bullet"><span></span>海神庙</p>
+<p class="bullet"><span></span>👖 穿着要求</p>
+<p class="bullet"><span></span>不能穿短裤进入（或需要围纱笼）</p>
+<p class="callout">建议带：</p>
+<p class="bullet"><span></span>一条轻薄长裤 / 长裙</p>
+<p class="callout">👉 虽然现场可以租纱笼</p>
+<p class="bullet"><span></span>但自己带更干净、更方便</p>
+</section>
+<section class="section-card"><h2>🧴 五、物资清单（真正实用版）</h2>
+<h3>☀️ 防晒类（非常重要）</h3>
+<p class="bullet"><span></span>防晒霜（50+）</p>
+<p class="bullet"><span></span>墨镜</p>
+<p class="bullet"><span></span>帽子</p>
+<h3>🦟 防蚊类</h3>
+<p class="bullet"><span></span>驱蚊液（建议带）</p>
+<p class="callout">👉 有登革热风险（低概率但存在）</p>
+<h3>💊 常用药</h3>
+<p class="bullet"><span></span>止泻药（非常建议带）</p>
+<p class="bullet"><span></span>感冒药</p>
+<p class="bullet"><span></span>创可贴</p>
+<h3>🔌 数码类</h3>
+<p class="bullet"><span></span>转换插头（印尼是欧标）</p>
+<p class="bullet"><span></span>充电宝</p>
+<h3>💧 其他</h3>
+<p class="bullet"><span></span>折叠水壶（买矿泉水装）</p>
+<p class="bullet"><span></span>湿巾（很实用）</p>
+</section>
+<section class="section-card"><h2>🧭 六、一个“打包思路”（帮你避免带多）</h2>
+<p class="callout">你这趟可以按三类打包：</p>
+<h3>① 火山模块（一次性用）</h3>
+<p class="bullet"><span></span>外套</p>
+<p class="bullet"><span></span>长裤</p>
+<p class="bullet"><span></span>口罩</p>
+<p class="callout">👉 用完就基本不再用</p>
+<h3>② 海岛模块（主力）</h3>
+<p class="bullet"><span></span>短袖</p>
+<p class="bullet"><span></span>短裤</p>
+<p class="bullet"><span></span>泳衣</p>
+<p class="callout">👉 占80%时间</p>
+<h3>③ 文化模块（点缀）</h3>
+<p class="bullet"><span></span>一条长裤/长裙</p>
+<p class="callout">👉 用于寺庙</p>
+</section>
+<section class="section-card"><h2>⚠️ 七、几个容易忽略的小坑</h2>
+<p class="callout">👉 真实经验级提醒：</p>
+<p class="danger">❌ 不带外套 → 布罗莫直接崩</p>
+<p class="danger">❌ 不带运动鞋 → 佩妮达岛很难走</p>
+<p class="danger">❌ 防晒不够 → 一天晒伤</p>
+<p class="danger">❌ 行李带太多 → 每天搬行李很痛苦</p>
+<h3>✅ 最后帮你收一句</h3>
+<p class="callout">你这趟的核心不是“带很多”，而是：</p>
+<p class="callout">带对：一件外套 + 一双好鞋 + 防晒到位</p>
+<p>剩下的，其实都可以在 巴厘岛 解决。</p>
+<p class="bullet"><span></span>🎒 印尼7天极简行李清单（可直接照着装）</p>
+<p class="bullet"><span></span>这一版我帮你按“真正能落地执行的极简清单”来做——</p>
+<p>目标只有一个：一个20寸箱 + 一个随身背包，轻松搞定7天多场景行程。</p>
+</section>
+<section class="section-card"><h2>👕 一、衣物（核心：够用 + 可轮换）</h2>
+<p class="callout">👉 原则：3天一循环 + 可叠穿</p>
+<p class="bullet"><span></span>上衣</p>
+<p class="bullet"><span></span>速干T恤 × 3</p>
+<p class="bullet"><span></span>轻薄长袖（防晒/寺庙）× 1</p>
+<p class="bullet"><span></span>下装</p>
+<p class="bullet"><span></span>短裤 × 2</p>
+<p class="bullet"><span></span>轻薄长裤 × 1（寺庙+防晒+飞机）</p>
+<p class="bullet"><span></span>功能件（关键）</p>
+<p class="bullet"><span></span>轻薄羽绒服 / 冲锋衣 × 1（布罗莫专用）</p>
+<p class="bullet"><span></span>泳衣 × 1</p>
+<p class="bullet"><span></span>内衣</p>
+<p class="bullet"><span></span>内裤 × 4–5</p>
+<p class="bullet"><span></span>袜子 × 2–3双</p>
+<p class="callout">👉 💡说明：</p>
+<p class="bullet"><span></span>可以洗衣（酒店/手洗），不用带7天量</p>
+<p class="bullet"><span></span>颜色尽量好搭，减少组合负担</p>
+</section>
+<section class="section-card"><h2>👟 二、鞋（不要多带！）</h2>
+<p class="callout">运动鞋 × 1（全程主力：火山+徒步）</p>
+<p class="bullet"><span></span>拖鞋 / 凉鞋 × 1（海岛+酒店）</p>
+<p class="callout">👉 ❗不要带第三双（90%用不上）</p>
+</section>
+<section class="section-card"><h2>🧥 三、火山“低温包”（单独思维）</h2>
+<p class="callout">👉 这套是“保命装备”：</p>
+<p class="bullet"><span></span>外套（上面已经带）</p>
+<p class="bullet"><span></span>长裤（已带）</p>
+<p class="bullet"><span></span>口罩 × 2</p>
+<p class="bullet"><span></span>头巾 / 围巾（可选）</p>
+<p class="callout">👉 用完可以收箱底，不占脑子</p>
+</section>
+<section class="section-card"><h2>🧴 四、洗护 &amp; 防护（小而精）</h2>
+<p class="bullet"><span></span>必带</p>
+<p class="bullet"><span></span>防晒霜（50+）</p>
+<p class="bullet"><span></span>驱蚊液</p>
+<p class="bullet"><span></span>牙刷牙膏（旅行装）</p>
+<p class="bullet"><span></span>小瓶洗发水/沐浴露（或直接用酒店）</p>
+<p class="bullet"><span></span>建议带</p>
+<p class="bullet"><span></span>护肤基础（简单就好）</p>
+<p class="bullet"><span></span>湿巾 × 1包</p>
+<p class="callout">👉 ❗不要带：</p>
+<p class="bullet"><span></span>大瓶洗护（酒店都有）</p>
+<p class="bullet"><span></span>复杂护肤全套（用不上）</p>
+</section>
+<section class="section-card"><h2>💊 五、药品（非常建议）</h2>
+<p class="bullet"><span></span>止泻药（重点）</p>
+<p class="bullet"><span></span>感冒药</p>
+<p class="bullet"><span></span>创可贴</p>
+<p class="callout">👉 💡这是“用不上最好，但一定要带”的类型</p>
+</section>
+<section class="section-card"><h2>🔌 六、数码 &amp; 证件</h2>
+<p class="bullet"><span></span>必带</p>
+<p class="bullet"><span></span>护照</p>
+<p class="bullet"><span></span>机票信息（电子即可）</p>
+<p class="bullet"><span></span>手机</p>
+<p class="bullet"><span></span>实用件</p>
+<p class="bullet"><span></span>充电宝</p>
+<p class="bullet"><span></span>欧标转换插头</p>
+<p class="bullet"><span></span>数据线（建议带2根）</p>
+</section>
+<section class="section-card"><h2>📶 七、网络（你刚刚已经确定）</h2>
+<p class="callout">👉 二选一：</p>
+<p class="bullet"><span></span>本地SIM卡（落地买）</p>
+<p class="bullet"><span></span>或eSIM（提前装好）</p>
+</section>
+<section class="section-card"><h2>🎒 八、随身背包（每天用）</h2>
+<p class="callout">👉 这个很关键，建议单独准备：</p>
+<p class="bullet"><span></span>放这些👇</p>
+<p class="bullet"><span></span>手机</p>
+<p class="bullet"><span></span>钱包</p>
+<p class="bullet"><span></span>防晒</p>
+<p class="bullet"><span></span>墨镜</p>
+<p class="bullet"><span></span>水</p>
+<p class="bullet"><span></span>少量现金</p>
+<p class="bullet"><span></span>充电宝</p>
+<p class="callout">👉 💡佩妮达岛、乌布都会用到</p>
+</section>
+<section class="section-card"><h2>⚖️ 九、一个“装箱结构”（帮你更省力）</h2>
+<p class="callout">👉 你可以这样分：</p>
+<p class="bullet"><span></span>行李箱（20寸）</p>
+<p class="bullet"><span></span>所有衣物</p>
+<p class="bullet"><span></span>洗护</p>
+<p class="bullet"><span></span>药品</p>
+<p class="bullet"><span></span>背包（随身）</p>
+<p class="bullet"><span></span>证件</p>
+<p class="bullet"><span></span>手机</p>
+<p class="bullet"><span></span>钱包</p>
+<p class="bullet"><span></span>一套备用衣物（以防延误）</p>
+</section>
+<section class="section-card"><h2>❌ 十、极简原则（帮你避免带多）</h2>
+<p class="callout">👉 出发前自检三句话：</p>
+<p>这件衣服能不能至少穿2次？</p>
+<p>这个东西在当地能不能买到？</p>
+<p>我真的会用它吗？</p>
+<p>只要有一个答案是“否”，就可以不带。</p>
+<h3>✅ 最后帮你收一下（非常关键）</h3>
+<p class="callout">你这趟最重要的不是带多，而是带对三样：</p>
+<p class="callout">👉 一件外套（火山）</p>
+<p class="callout">👉 一双好走的鞋（佩妮达）</p>
+<p class="callout">👉 一套防晒（巴厘岛）</p>
+<p>其他都是加分项。</p>
+<p class="callout">如果你愿意，我可以帮你再升级一版：</p>
+<p>👉 “每天穿什么”的搭配方案（按你行程逐天安排），可以做到几乎不用思考，直接拿衣服穿。</p>
+</section>
+    </main>
+    <footer>由《旅行物资提示——按行程.docx》整理生成。建议出发前再次核对航班、酒店、天气与当地政策。</footer>
+  </div>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片放大预览">
+    <button type="button" aria-label="关闭图片预览">×</button>
+    <img alt="放大的旅行照片">
+  </div>
+  <script>
+    const sections = [...document.querySelectorAll('.section-card h2')];
+    const ids = ['bromo','island','penida','temple','packing','pitfalls'];
+    sections.forEach((h, i) => { if (ids[i]) h.parentElement.id = ids[i]; });
+    const box = document.getElementById('lightbox');
+    const boxImg = box.querySelector('img');
+    document.querySelectorAll('.photo-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        boxImg.src = btn.dataset.src;
+        box.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeBox() { box.classList.remove('open'); boxImg.removeAttribute('src'); document.body.style.overflow = ''; }
+    box.addEventListener('click', (event) => { if (event.target === box || event.target.tagName === 'BUTTON') closeBox(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeBox(); });
+  </script>
+</body>
+</html>
