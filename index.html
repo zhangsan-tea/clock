@@ -510,7 +510,7 @@
         `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
 
       // 检查整点报时
-      checkChime(hours, minutes, seconds);
+      checkChime();
 
       // 动态计算到下一秒的精确延迟，确保每次都对齐秒边界
       const msToNextSecond = 1000 - now.getMilliseconds();
@@ -523,8 +523,6 @@
 
     // ==================== 整点报时 ====================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let lastChimeHour = -1;
-    let lastHalfChimeHour = -1;
     let isChiming = false;
 
     // 系统状态检测
@@ -567,8 +565,10 @@
       const now = new Date();
       const h = now.getHours();
       if (h >= 8 && h < 22) {
-        if (status.isSleeping || status.isDoNotDisturb) {
+        if (status.isDoNotDisturb) {
           chimeStatusEl.textContent = '报时：已暂停（' + status.label + '）';
+        } else if (audioCtx.state === 'suspended') {
+          chimeStatusEl.textContent = '报时：开启 (8:00 - 22:00) · ⚠️ 请点击页面激活声音';
         } else {
           chimeStatusEl.textContent = '报时：开启 (8:00 - 22:00)';
         }
@@ -583,38 +583,65 @@
       // 只在 8:00 - 21:59 报时（即 8 点到 22 点之间的整点）
       if (hour < 8 || hour >= 22) return false;
 
+      // 注意：页面被切到后台（document.hidden）时不再阻止报时，
+      // 否则切换标签页就会漏报。仅勿扰模式才静音。
       const status = getSystemStatus();
-      if (status.isSleeping || status.isDoNotDisturb) return false;
+      if (status.isDoNotDisturb) return false;
 
       return true;
     }
 
-    function checkChime(hours, minutes, seconds) {
-      // 整点报时
-      if (minutes === 0 && seconds === 0 && !isChiming && lastChimeHour !== hours) {
-        if (canChime(hours)) {
-          lastChimeHour = hours;
-          const chimeCount = hours % 12 === 0 ? 12 : hours % 12;
-          playChime(chimeCount, hours);
-        } else {
-          lastChimeHour = hours;
+    // 已报时刻记录（格式：YYYY-M-D-H-0 / YYYY-M-D-H-30），避免重复报时
+    let lastChimeKey = null;
+    // 容错窗口：整点/半点后 90 秒内都允许补报
+    // （Chrome 后台标签页会节流定时器，可能错过 seconds === 0 那一刻）
+    const CHIME_CATCHUP_WINDOW = 90;
+
+    function makeChimeKey(d, mark) {
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}-${mark}`;
+    }
+
+    // 基于绝对时间判断是否该报时，支持错过后补报
+    function checkChime() {
+      if (isChiming) return;
+
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+
+      // 距离本小时整点、半点已过去的秒数
+      const secsSinceHour = minutes * 60 + seconds;
+      const secsSinceHalf = (minutes - 30) * 60 + seconds;
+
+      // 整点报时（0 ~ 90 秒窗口内）
+      if (secsSinceHour >= 0 && secsSinceHour <= CHIME_CATCHUP_WINDOW) {
+        const key = makeChimeKey(now, 0);
+        if (lastChimeKey !== key) {
+          lastChimeKey = key;
+          if (canChime(hours)) {
+            const chimeCount = hours % 12 === 0 ? 12 : hours % 12;
+            if (secsSinceHour > 1) {
+              console.log('检测到错过整点报时，补报（延迟', secsSinceHour, '秒）');
+            }
+            playChime(chimeCount, hours);
+          }
         }
+        return;
       }
-      // 半点报时（音量60%）
-      if (minutes === 30 && seconds === 0 && !isChiming && lastHalfChimeHour !== hours) {
-        if (canChime(hours)) {
-          lastHalfChimeHour = hours;
-          playHalfChime(hours);
-        } else {
-          lastHalfChimeHour = hours;
+
+      // 半点报时（30分 ~ 30分90秒窗口内，音量60%）
+      if (secsSinceHalf >= 0 && secsSinceHalf <= CHIME_CATCHUP_WINDOW) {
+        const key = makeChimeKey(now, 30);
+        if (lastChimeKey !== key) {
+          lastChimeKey = key;
+          if (canChime(hours)) {
+            if (secsSinceHalf > 1) {
+              console.log('检测到错过半点报时，补报（延迟', secsSinceHalf, '秒）');
+            }
+            playHalfChime(hours);
+          }
         }
-      }
-      // 过了整点/半点则重置
-      if (minutes !== 0) {
-        lastChimeHour = -1;
-      }
-      if (minutes !== 30) {
-        lastHalfChimeHour = -1;
       }
     }
 
@@ -800,30 +827,59 @@
     // 页面可见性变化监听
     document.addEventListener('visibilitychange', () => {
       updateStatusDisplay();
-      if (!document.hidden && audioCtx.state === 'suspended') {
-        audioCtx.resume();
+      if (!document.hidden) {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        // 切回前台立即检查一次，补报被节流错过的报时
+        checkChime();
       }
     });
 
-    // 点击页面激活音频
+    // 点击/按键激活音频（Chrome 自动播放策略要求用户手势）
     let audioActivated = false;
-    document.addEventListener('click', () => {
-      if (!audioActivated) {
-        audioCtx.resume().then(() => {
-          audioActivated = true;
-        });
-      }
+    function activateAudio() {
+      if (audioActivated) return;
+      audioCtx.resume().then(() => {
+        audioActivated = true;
+        startKeepAlive();
+        updateStatusDisplay();
+        console.log('音频已激活');
+      }).catch(() => {});
+    }
+    ['click', 'keydown', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, activateAudio, { passive: true });
     });
+
+    // 保活：播放一个音量为 0 的持续静音源。
+    // Chrome 不会对"正在播放音频"的标签页做激进的定时器节流，
+    // 这样切到后台时时钟和报时检查仍能按秒运行。
+    let keepAliveStarted = false;
+    function startKeepAlive() {
+      if (keepAliveStarted) return;
+      keepAliveStarted = true;
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      g.gain.value = 0; // 完全静音
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      osc.start();
+      console.log('音频保活已启动（减少后台节流）');
+    }
+
+    // 独立的报时心跳：不依赖时钟渲染循环，每秒独立检查一次
+    setInterval(checkChime, 1000);
 
     // 初始状态更新
     updateStatusDisplay();
 
     // 测试报时按钮（固定3声）
     document.getElementById('testChimeBtn').addEventListener('click', () => {
+      activateAudio();
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
-      audioActivated = true;
+      startKeepAlive();
       const now = new Date();
       const h = now.getHours();
       playChime(3, h);
@@ -831,10 +887,11 @@
 
     // 测试半点报时按钮（1声，音量60%）
     document.getElementById('testHalfChimeBtn').addEventListener('click', () => {
+      activateAudio();
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
-      audioActivated = true;
+      startKeepAlive();
       const now = new Date();
       const h = now.getHours();
       playHalfChime(h);
